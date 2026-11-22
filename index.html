@@ -7,7 +7,7 @@
 <meta name="author" content="투머치쌤 · Instagram @too.much.science">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Do+Hyeon&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -15,14 +15,14 @@ body{background:#f2e9d8;color:#3a2f28;font-family:"Apple SD Gothic Neo","Malgun 
 button,input,textarea,select{font-family:inherit;color:inherit}
 .wrap{max-width:1040px;margin:0 auto;padding:18px 18px 60px}
 .hero{background:#2f5546;border:6px solid #3b2f27;border-radius:22px;color:#f6f3ea;padding:22px 24px 26px;text-align:center;position:relative;box-shadow:0 10px 0 #8a6a4c}
-.hero h1{font-family:"Hi Melody",cursive;font-size:52px;margin:0;line-height:1.05}
+.hero h1{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:52px;margin:0;line-height:1.05}
 .hero h1 b{color:#ffe27a}
-.hero p{font-family:"Hi Melody",cursive;font-size:23px;margin:8px 0 0;color:#dfe9e1}
-.hero .flow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-family:"Hi Melody",cursive;font-size:21px}
+.hero p{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:23px;margin:8px 0 0;color:#dfe9e1}
+.hero .flow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:21px}
 .hero .flow span{border:2px dashed rgba(246,243,234,.55);border-radius:999px;padding:3px 14px}
 .hero .flow i{font-style:normal;color:#ffe27a}
 .card{background:#fffaf0;border:2.5px solid #3b2f27;border-radius:18px;padding:16px 18px;margin:18px 0}
-.card h2{font-family:"Hi Melody",cursive;font-size:28px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.card h2{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:28px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
 .card h2 .n{display:inline-block;background:#ffe27a;border:2px solid #3b2f27;border-radius:999px;width:34px;height:34px;line-height:30px;text-align:center;font-size:22px}
 .hint{font-size:14px;color:#7a6a58;line-height:1.65;margin:4px 0}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -42,11 +42,11 @@ textarea.inp{resize:vertical;line-height:1.5}
 .stus{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:12px;max-height:390px;overflow-y:auto;padding:2px 4px 2px 0}
 .stu{position:relative;background:#2f5546;border:2px solid #3b2f27;border-radius:12px;padding:5px;color:#f6f3ea}
 .stu canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:8px}
-.stu b{display:block;font-family:"Hi Melody",cursive;font-size:16px;color:#ffe27a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stu p{margin:0;font-family:"Hi Melody",cursive;font-size:13px;line-height:1.2;color:#eef3ee;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stu b{display:block;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:16px;color:#ffe27a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stu p{margin:0;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:13px;line-height:1.2;color:#eef3ee;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .stu .x{position:absolute;top:3px;right:3px;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:22px;height:22px;cursor:pointer;font-size:12px}
 .stu p:hover{-webkit-line-clamp:unset}
-.cnt{font-family:"Hi Melody",cursive;font-size:22px;margin-left:auto}
+.cnt{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:22px;margin-left:auto}
 .photos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .ph{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:2px solid #3b2f27;background:#ddd}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
@@ -60,7 +60,7 @@ label.f{display:block;font-weight:700;font-size:14px;margin-bottom:4px}
 input[type=range]{width:100%;accent-color:#ff8a5c}
 .est{background:#eaf4ff;border:2px solid #4f97d8;border-radius:12px;padding:10px 14px;margin-top:12px;line-height:1.75;font-size:15px}
 .est.warn{background:#fff3c4;border-color:#d9a400}.est.bad{background:#ffe3dc;border-color:#c0392b}
-.start{display:block;width:100%;border:3px solid #3b2f27;border-radius:18px;background:#ff8a5c;color:#fff;font-family:"Hi Melody",cursive;font-size:38px;font-weight:700;padding:12px;cursor:pointer;box-shadow:0 6px 0 #3b2f27;margin-top:22px}
+.start{display:block;width:100%;border:3px solid #3b2f27;border-radius:18px;background:#ff8a5c;color:#fff;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:34px;font-weight:400;padding:12px;cursor:pointer;box-shadow:0 6px 0 #3b2f27;margin-top:22px}
 .start:active{transform:translateY(5px);box-shadow:none}
 .start:disabled{opacity:.5;cursor:default}
 .keys{font-size:14px;color:#6a5a48;line-height:2;text-align:center;margin-top:10px}
@@ -506,7 +506,7 @@ var Show = (function () {
   var el = {}, cv, g, K = 1, OX = 0, OY = 0, bg = null, doneC = null, doneN = 0;
   var D = null, P = null, cells = [], photos = [], t = 0, paused = false, running = false, finished = false, raf = 0, last = 0;
   var mus = null, musicMode = false, clicked = false, hideT = 0, AC = null;
-  var OV = { x: 960, y: 540, s: 1 };
+  var OV = { x: 960, y: 540, s: 1, r: 0 };
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function ease(x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); }
@@ -535,8 +535,11 @@ var Show = (function () {
     for (i = 0; i < n; i++) {
       var row = Math.floor(i / best.cols), col = i % best.cols, inRow = Math.min(best.cols, n - row * best.cols);
       var x0 = REGION.x + (REGION.w - inRow * best.cw) / 2;
-      out.push({ cx: x0 + (col + 0.5) * best.cw + (r() - 0.5) * best.cw * 0.05, cy: REGION.y + (row + 0.5) * best.ch + (r() - 0.5) * best.ch * 0.06,
-        w: best.cw * 0.93, h: best.ch * 0.9, rot: (r() - 0.5) * 0.07 });
+      // 학생들이 칠판 여기저기에 쓴 것처럼: 대부분 살짝, 셋 중 하나는 크게 기울임
+      var rot = r() < 0.64 ? (r() - 0.5) * 0.2 : (r() < 0.5 ? -1 : 1) * (0.2 + r() * 0.2);
+      var tc = r(), tcol = tc < 0.5 ? 0 : tc < 0.66 ? 1 : tc < 0.8 ? 2 : tc < 0.92 ? 3 : 4;
+      out.push({ cx: x0 + (col + 0.5) * best.cw + (r() - 0.5) * best.cw * 0.12, cy: REGION.y + (row + 0.5) * best.ch + (r() - 0.5) * best.ch * 0.14,
+        w: best.cw * 0.93, h: best.ch * 0.9, gw: best.cw, gh: best.ch, rot: rot, flip: r() < 0.4, tcol: tcol, size: 0.9 + r() * 0.18 });
     }
     return out;
   }
@@ -544,8 +547,12 @@ var Show = (function () {
     var L = layout(students.length), m = document.createElement('canvas').getContext('2d');
     return students.map(function (st, i) {
       var c = Object.assign({}, L[i], { d: st }), ch = c.h, cw = c.w, f, lines, nf;
-      c.ds = Math.min(ch * 0.9, cw * 0.5); c.dx = -cw / 2 + ch * 0.02; c.dy = -c.ds / 2;
-      c.tx = c.dx + c.ds + ch * 0.07; c.tw = cw / 2 - c.tx - ch * 0.03;
+      c.ds = Math.min(ch * 0.9, cw * 0.5); c.dy = -c.ds / 2;
+      if (c.flip) { c.dx = cw / 2 - ch * 0.02 - c.ds; c.tx = -cw / 2 + ch * 0.03; c.tw = c.dx - ch * 0.07 - c.tx; }   // 그림이 오른쪽
+      else { c.dx = -cw / 2 + ch * 0.02; c.tx = c.dx + c.ds + ch * 0.07; c.tw = cw / 2 - c.tx - ch * 0.03; }
+      // 기울여도 옆 칸을 많이 덮지 않게 크기 맞춤
+      var ca = Math.abs(Math.cos(c.rot)), sa = Math.abs(Math.sin(c.rot)), bw = cw * ca + ch * sa, bh2 = cw * sa + ch * ca;
+      c.sc = Math.min(c.size, c.gw * 1.04 / bw, c.gh * 1.12 / bh2);
       for (f = ch * 0.2; f > ch * 0.06; f -= ch * 0.005) {
         m.font = '700 ' + f + 'px ' + CHALK_FONT; lines = Chalk.wrap(m, st.msg || '', c.tw);
         nf = Math.max(ch * 0.1, f * 0.85);
@@ -555,26 +562,26 @@ var Show = (function () {
       var bh = lines.length * f * 1.2 + nf * 1.45;
       c.ty = -bh / 2; c.ny = c.ty + lines.length * f * 1.2 + nf * 0.35;
       c.chars = lines.reduce(function (a, l) { return a + Array.from(l).length; }, 0);
-      c.cam = { x: c.cx, y: c.cy, s: clamp(Math.min(W * 0.66 / c.w, H * 0.6 / c.h), 1, 4.2) };
+      c.cam = { x: c.cx, y: c.cy, s: clamp(Math.min(W * 0.66 / (c.w * c.sc), H * 0.6 / (c.h * c.sc)), 1, 4.2), r: -c.rot * 0.55 };   // 가까이 볼 때는 조금 덜 기울어져 보이게
       return c;
     });
   }
   function drawCell(g, c, pd, pt, tipOn) {
-    g.save(); g.translate(c.cx, c.cy); g.rotate(c.rot);
+    g.save(); g.translate(c.cx, c.cy); g.rotate(c.rot); g.scale(c.sc, c.sc);
     var tip = pd > 0 ? Chalk.drawStrokes(g, c.d.strokes, c.dx, c.dy, c.ds, pd) : null;
     if (pt > 0) {
       g.font = '700 ' + c.f + 'px ' + CHALK_FONT; g.textBaseline = 'top'; g.textAlign = 'left';
       var shown = Math.floor(c.chars * pt + 1e-6), used = 0;
       c.lines.forEach(function (ln, i) {
         var n = Array.from(ln).length;
-        if (shown > used) Chalk.text(g, ln, c.tx, c.ty + i * c.f * 1.2, CHALK_COLORS[0], shown - used);
+        if (shown > used) Chalk.text(g, ln, c.tx, c.ty + i * c.f * 1.2, CHALK_COLORS[c.tcol || 0], shown - used);
         used += n;
       });
       var na = clamp((pt - 0.85) / 0.15, 0, 1);
       if (na > 0) {
         var a0 = g.globalAlpha; g.globalAlpha = a0 * na;
         g.font = '700 ' + c.nf + 'px ' + CHALK_FONT; g.textAlign = 'right';
-        Chalk.text(g, '- ' + c.d.name, c.tx + c.tw, c.ny, CHALK_COLORS[1]);
+        Chalk.text(g, '- ' + c.d.name, c.tx + c.tw, c.ny, CHALK_COLORS[c.tcol === 1 ? 0 : 1]);
         g.globalAlpha = a0;
       }
     }
@@ -651,15 +658,15 @@ var Show = (function () {
     if (tt < P.tOv) {
       var i = Math.min(cells.length - 1, Math.floor((tt - P.tCe) / P.per)), loc = (tt - P.tCe - i * P.per) / P.per;
       var tr = trFrac(), e = ease(loc / tr), from = i ? cells[i - 1].cam : OV, to = cells[i].cam;
-      return { x: lerp(from.x, to.x, e), y: lerp(from.y, to.y, e), s: lerp(from.s, to.s, e) * (1 - (i ? 0.28 : 0) * Math.sin(Math.PI * e)) };
+      return { x: lerp(from.x, to.x, e), y: lerp(from.y, to.y, e), s: lerp(from.s, to.s, e) * (1 - (i ? 0.28 : 0) * Math.sin(Math.PI * e)), r: lerp(from.r || 0, to.r || 0, e) };
     }
     var e2 = ease((tt - P.tOv) / (P.ov * 0.6)), a = cells[cells.length - 1].cam;
-    return { x: lerp(a.x, OV.x, e2), y: lerp(a.y, OV.y, e2), s: lerp(a.s, OV.s, e2) };
+    return { x: lerp(a.x, OV.x, e2), y: lerp(a.y, OV.y, e2), s: lerp(a.s, OV.s, e2), r: lerp(a.r || 0, 0, e2) };
   }
   function trFrac() { return clamp(1.3 / P.per, 0.12, 0.28); }
   function setCam(c) {
     g.setTransform(K, 0, 0, K, OX, OY);
-    g.translate(W / 2, H / 2); g.scale(c.s, c.s); g.translate(-c.x, -c.y);
+    g.translate(W / 2, H / 2); g.scale(c.s, c.s); if (c.r) g.rotate(c.r); g.translate(-c.x, -c.y);
   }
 
   /* ---------- 다 쓴 칸은 그림으로 모아 두기 (멀리서 볼 때 빠르게) ---------- */
@@ -673,7 +680,7 @@ var Show = (function () {
   function drawDone(c, n) {
     if (!n) return;
     if (c.s < 1.7) { ensureDone(n); g.drawImage(doneC, 0, 0, W, H); return; }
-    var hw = W / 2 / c.s, hh = H / 2 / c.s;
+    var hw = W / 2 / c.s * 1.25, hh = H / 2 / c.s * 1.6;
     for (var i = 0; i < n; i++) {
       var q = cells[i], R = Math.max(q.w, q.h) * 0.6;
       if (q.cx + R < c.x - hw || q.cx - R > c.x + hw || q.cy + R < c.y - hh || q.cy - R > c.y + hh) continue;

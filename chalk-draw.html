@@ -7,18 +7,18 @@
 <meta name="author" content="투머치쌤 · Instagram @too.much.science">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hi+Melody&family=Do+Hyeon&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:#f2e9d8;color:#3a2f28;font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:520px;margin:0 auto;padding:14px 14px 40px}
 .hero{background:#2f5546;border:5px solid #3b2f27;border-radius:18px;color:#f6f3ea;padding:16px 16px 14px;text-align:center;position:relative;box-shadow:0 5px 0 #8a6a4c}
-.hero h1{font-family:"Hi Melody",cursive;font-size:34px;margin:0;line-height:1.1}
+.hero h1{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:34px;margin:0;line-height:1.1}
 .hero h1 b{color:#ffe27a}
-.hero p{font-family:"Hi Melody",cursive;font-size:19px;margin:6px 0 0;color:#dfe9e1}
+.hero p{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:19px;margin:6px 0 0;color:#dfe9e1}
 .card{background:#fffaf0;border:2.5px solid #3b2f27;border-radius:16px;padding:12px 14px;margin:14px 0}
-.card h2{font-family:"Hi Melody",cursive;font-size:24px;margin:0 0 8px}
+.card h2{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:24px;margin:0 0 8px}
 .card h2 span{display:inline-block;background:#ffe27a;border:2px solid #3b2f27;border-radius:999px;width:30px;height:30px;line-height:26px;text-align:center;font-size:20px;margin-right:6px}
 input.t,textarea.t{width:100%;font:inherit;font-size:17px;padding:10px 12px;border:2px solid #cdbb9c;border-radius:12px;background:#fff;color:inherit}
 input.t:focus,textarea.t:focus{outline:3px solid #ffe27a;border-color:#3b2f27}
@@ -34,7 +34,7 @@ textarea.t{resize:none;height:84px;line-height:1.5}
   .board{width:min(100%,max(300px,calc(100vh - 250px)))}
 }
 #pad{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
-.hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Hi Melody",cursive;font-size:24px;color:rgba(246,243,234,.45);pointer-events:none;text-align:center;padding:20px}
+.hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:24px;color:rgba(246,243,234,.45);pointer-events:none;text-align:center;padding:20px}
 .tray{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
 .col{width:38px;height:38px;border-radius:50%;border:3px solid #3b2f27;cursor:pointer;padding:0}
 .col.on{box-shadow:0 0 0 3px #fffaf0,0 0 0 6px #ff8a5c}
@@ -44,18 +44,22 @@ textarea.t{resize:none;height:84px;line-height:1.5}
 .sp{flex:1}
 .tool{border:2.5px solid #3b2f27;background:#fff;border-radius:12px;font:inherit;font-size:15px;font-weight:700;padding:8px 10px;cursor:pointer}
 .tool:disabled{opacity:.35}
+.er{width:46px;height:38px;border-radius:12px;border:2.5px solid #cdbb9c;background:#fff;cursor:pointer;font-size:20px;padding:0;margin-left:4px}
+.er.on{border-color:#3b2f27;background:#ffe27a;box-shadow:0 0 0 3px #fffaf0,0 0 0 6px #ff8a5c}
+.board.erasing,#pad.erasing{cursor:cell}
+.gl.er-on{color:#b35a00;font-weight:700}
 .gauge{height:8px;border-radius:99px;background:#e7dcc6;margin-top:10px;overflow:hidden}
 .gauge i{display:block;height:100%;width:0;background:#8fc9a3;transition:width .2s}
 .gauge.low i{background:#ff9a6b}
 .gl{font-size:12px;color:#8a7a66;margin-top:3px}
-.big{width:100%;border:3px solid #3b2f27;border-radius:16px;background:#ff8a5c;color:#fff;font-family:"Hi Melody",cursive;font-size:28px;font-weight:700;padding:10px;cursor:pointer;box-shadow:0 4px 0 #3b2f27}
+.big{width:100%;border:3px solid #3b2f27;border-radius:16px;background:#ff8a5c;color:#fff;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:26px;font-weight:400;padding:10px;cursor:pointer;box-shadow:0 4px 0 #3b2f27}
 .big:active{transform:translateY(4px);box-shadow:none}
 .err{color:#c0392b;font-weight:700;font-size:14px;min-height:18px;margin-top:8px;text-align:center}
 #done{display:none}
 #done.on{display:block}
 .prev{display:flex;gap:12px;align-items:center}
 .prev canvas{width:120px;height:120px;border-radius:12px;border:3px solid #3b2f27;background:#2f5546;flex:none}
-.prev .m{font-family:"Hi Melody",cursive;font-size:20px;line-height:1.3}
+.prev .m{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:20px;line-height:1.3}
 .prev .m b{color:#b36b00}
 #code{height:110px;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:10px}
 .copy{margin-top:10px;background:#2f5546}
@@ -85,7 +89,7 @@ textarea.t{resize:none;height:84px;line-height:1.5}
       <div id="wids" style="display:flex;gap:6px"></div>
       <span class="sp"></span>
       <button class="tool" id="undo">↶ 되돌리기</button>
-      <button class="tool" id="clear">지우기</button>
+      <button class="tool" id="clear">모두 지우기</button>
     </div>
     <div class="gauge" id="gauge"><i></i></div>
     <div class="gl" id="gl">분필 남은 양</div>
@@ -321,6 +325,7 @@ var Chalk = (function () {
   var pad = document.getElementById('pad'), g = pad.getContext('2d');
   var state = { name: '', msg: '', strokes: [], c: 0, w: 1 };
   var cur = null, dpr = 1, size = 0, boardTex = null;
+  var erasing = false, ers = null, hist = [];   // 지우개 모드, 지금 문지르는 중에 지운 선들, 되돌리기 기록
   function $(id) { return document.getElementById(id); }
 
   try { var s0 = JSON.parse(localStorage.getItem(KEY)); if (s0 && Array.isArray(s0.strokes)) state = Object.assign(state, s0); } catch (e) { }
@@ -356,12 +361,41 @@ var Chalk = (function () {
   function updateUI() {
     var u = used(), left = Math.max(0, 1 - u / ChalkCode.MAX_PTS), gg = $('gauge');
     gg.firstChild.style.width = (left * 100) + '%'; gg.classList.toggle('low', left < 0.2);
-    $('gl').textContent = left <= 0 ? '분필을 다 썼어요! 되돌리기로 조금 지우면 더 그릴 수 있어요.' : '분필 남은 양';
-    $('undo').disabled = !state.strokes.length; $('clear').disabled = !state.strokes.length;
+    $('gl').textContent = erasing ? '🧽 지우개: 지울 선을 톡 누르거나 문질러요. 색을 누르면 다시 그려요.'
+      : left <= 0 ? '분필을 다 썼어요! 지우개나 되돌리기로 조금 지우면 더 그릴 수 있어요.' : '분필 남은 양';
+    $('gl').classList.toggle('er-on', erasing);
+    $('undo').disabled = !hist.length && !state.strokes.length; $('clear').disabled = !state.strokes.length;
   }
   // 펜 따라 그리기
   function pos(e) { var r = pad.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * GRID, (e.clientY - r.top) / r.height * GRID]; }
+  /* 지우개: 손가락이 닿은 선은 한 번에 그은 선 전체를 지움 */
+  function segDist(px, py, ax, ay, bx, by) {
+    var dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy, t = L ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L)) : 0;
+    return Math.hypot(px - ax - t * dx, py - ay - t * dy);
+  }
+  function hitStroke(s, x, y) {
+    var tol = CHALK_WIDTHS[s.w] * 0.75 + 7, p = s.p, i;
+    if (p.length === 2) return Math.hypot(x - p[0], y - p[1]) <= tol;
+    for (i = 0; i < p.length - 2; i += 2) if (segDist(x, y, p[i], p[i + 1], p[i + 2], p[i + 3]) <= tol) return true;
+    return false;
+  }
+  function eraseAt(x, y) {
+    var hit = false;
+    for (var i = state.strokes.length - 1; i >= 0; i--) {
+      if (hitStroke(state.strokes[i], x, y)) { ers.push({ i: i, s: state.strokes[i] }); state.strokes.splice(i, 1); hit = true; }
+    }
+    if (hit) { if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) { } } redraw(); }
+  }
+  function endErase() {
+    if (!ers) return;
+    if (ers.length) { hist.push({ t: 'erase', items: ers }); save(); }
+    ers = null; updateUI();
+  }
   pad.addEventListener('pointerdown', function (e) {
+    if (erasing) {
+      e.preventDefault(); pad.setPointerCapture(e.pointerId); ers = [];
+      var q = pos(e); eraseAt(q[0], q[1]); return;
+    }
     if (used() >= ChalkCode.MAX_PTS) { updateUI(); return; }
     e.preventDefault(); pad.setPointerCapture(e.pointerId);
     var p = pos(e); cur = { c: state.c, w: state.w, p: [p[0], p[1]] };
@@ -369,6 +403,11 @@ var Chalk = (function () {
     setT(); Chalk.drawStrokes(g, [cur], 0, 0, GRID, 1);
   });
   pad.addEventListener('pointermove', function (e) {
+    if (ers) {
+      e.preventDefault();
+      (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach(function (ev) { var q = pos(ev); eraseAt(q[0], q[1]); });
+      return;
+    }
     if (!cur) return; e.preventDefault();
     var list = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     list.forEach(function (ev) {
@@ -381,9 +420,10 @@ var Chalk = (function () {
     updateUI();
   });
   function end() {
+    if (ers) { endErase(); return; }
     if (!cur) return;
     cur.p = rdp(cur.p, 0.55).map(function (v) { return Math.max(0, Math.min(255, Math.round(v))); });
-    state.strokes.push(cur); cur = null; save(); redraw();
+    state.strokes.push(cur); hist.push({ t: 'add', s: cur }); cur = null; save(); redraw();
   }
   pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end); pad.addEventListener('lostpointercapture', end);
 
@@ -405,19 +445,30 @@ var Chalk = (function () {
   // 분필 색과 굵기
   CHALK_COLORS.forEach(function (c, i) {
     var b = document.createElement('button'); b.className = 'col'; b.style.background = c; b.title = CHALK_COLOR_NAMES[i];
-    b.onclick = function () { state.c = i; save(); tools(); }; $('cols').appendChild(b);
+    b.onclick = function () { state.c = i; erasing = false; save(); tools(); }; $('cols').appendChild(b);
   });
+  var erB = document.createElement('button'); erB.className = 'er'; erB.id = 'eraser'; erB.textContent = '🧽'; erB.title = '지우개 (한 번에 그은 선을 통째로 지워요)';
+  erB.onclick = function () { erasing = !erasing; tools(); }; $('cols').appendChild(erB);
   [8, 13, 20].forEach(function (px, i) {
     var b = document.createElement('button'); b.className = 'wid'; b.title = ['가늘게', '보통', '굵게'][i];
     var dot = document.createElement('i'); dot.style.width = dot.style.height = px + 'px'; b.appendChild(dot);
-    b.onclick = function () { state.w = i; save(); tools(); }; $('wids').appendChild(b);
+    b.onclick = function () { state.w = i; erasing = false; save(); tools(); }; $('wids').appendChild(b);
   });
   function tools() {
-    Array.prototype.forEach.call($('cols').children, function (b, i) { b.classList.toggle('on', i === state.c); });
-    Array.prototype.forEach.call($('wids').children, function (b, i) { b.classList.toggle('on', i === state.w); });
+    Array.prototype.forEach.call($('cols').children, function (b, i) { if (b.id !== 'eraser') b.classList.toggle('on', !erasing && i === state.c); });
+    Array.prototype.forEach.call($('wids').children, function (b, i) { b.classList.toggle('on', !erasing && i === state.w); });
+    erB.classList.toggle('on', erasing); pad.classList.toggle('erasing', erasing); updateUI();
   }
-  $('undo').onclick = function () { state.strokes.pop(); save(); redraw(); };
-  $('clear').onclick = function () { if (!window.confirm('그림을 모두 지울까요?')) return; state.strokes = []; save(); redraw(); };
+  // 되돌리기: 그린 선, 지우개로 지운 선, 모두 지우기를 하나씩 되돌림
+  $('undo').onclick = function () {
+    var h = hist.pop();
+    if (!h) state.strokes.pop();
+    else if (h.t === 'add') { var k = state.strokes.lastIndexOf(h.s); if (k >= 0) state.strokes.splice(k, 1); }
+    else if (h.t === 'erase') h.items.slice().reverse().forEach(function (it) { state.strokes.splice(Math.min(it.i, state.strokes.length), 0, it.s); });
+    else if (h.t === 'clear') state.strokes = h.strokes.slice();
+    save(); redraw();
+  };
+  $('clear').onclick = function () { if (!window.confirm('그림을 모두 지울까요?')) return; hist.push({ t: 'clear', strokes: state.strokes.slice() }); state.strokes = []; save(); redraw(); };
 
   // 이름, 한마디
   $('name').value = state.name || ''; $('msg').value = state.msg || '';
