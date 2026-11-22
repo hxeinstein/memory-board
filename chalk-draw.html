@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>우리 반 추억 칠판 · 그림판</title>
+<meta name="author" content="투머치쌤 · Instagram @too.much.science">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#f2e9d8;color:#3a2f28;font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+.hero{background:#2f5546;border:5px solid #3b2f27;border-radius:18px;color:#f6f3ea;padding:16px 16px 14px;text-align:center;position:relative;box-shadow:0 5px 0 #8a6a4c}
+.hero h1{font-family:"Hi Melody",cursive;font-size:34px;margin:0;line-height:1.1}
+.hero h1 b{color:#ffe27a}
+.hero p{font-family:"Hi Melody",cursive;font-size:19px;margin:6px 0 0;color:#dfe9e1}
+.card{background:#fffaf0;border:2.5px solid #3b2f27;border-radius:16px;padding:12px 14px;margin:14px 0}
+.card h2{font-family:"Hi Melody",cursive;font-size:24px;margin:0 0 8px}
+.card h2 span{display:inline-block;background:#ffe27a;border:2px solid #3b2f27;border-radius:999px;width:30px;height:30px;line-height:26px;text-align:center;font-size:20px;margin-right:6px}
+input.t,textarea.t{width:100%;font:inherit;font-size:17px;padding:10px 12px;border:2px solid #cdbb9c;border-radius:12px;background:#fff;color:inherit}
+input.t:focus,textarea.t:focus{outline:3px solid #ffe27a;border-color:#3b2f27}
+textarea.t{resize:none;height:84px;line-height:1.5}
+.cnt{text-align:right;font-size:13px;color:#8a7a66;margin-top:4px}
+.board{position:relative;background:#2f5546;border:4px solid #3b2f27;border-radius:14px;overflow:hidden;touch-action:none;aspect-ratio:1/1}
+#pad{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Hi Melody",cursive;font-size:24px;color:rgba(246,243,234,.45);pointer-events:none;text-align:center;padding:20px}
+.tray{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.col{width:38px;height:38px;border-radius:50%;border:3px solid #3b2f27;cursor:pointer;padding:0}
+.col.on{box-shadow:0 0 0 3px #fffaf0,0 0 0 6px #ff8a5c}
+.wid{width:42px;height:38px;border-radius:12px;border:2.5px solid #cdbb9c;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.wid i{display:block;border-radius:50%;background:#3b2f27}
+.wid.on{border-color:#3b2f27;background:#ffe27a}
+.sp{flex:1}
+.tool{border:2.5px solid #3b2f27;background:#fff;border-radius:12px;font:inherit;font-size:15px;font-weight:700;padding:8px 10px;cursor:pointer}
+.tool:disabled{opacity:.35}
+.gauge{height:8px;border-radius:99px;background:#e7dcc6;margin-top:10px;overflow:hidden}
+.gauge i{display:block;height:100%;width:0;background:#8fc9a3;transition:width .2s}
+.gauge.low i{background:#ff9a6b}
+.gl{font-size:12px;color:#8a7a66;margin-top:3px}
+.big{width:100%;border:3px solid #3b2f27;border-radius:16px;background:#ff8a5c;color:#fff;font-family:"Hi Melody",cursive;font-size:28px;font-weight:700;padding:10px;cursor:pointer;box-shadow:0 4px 0 #3b2f27}
+.big:active{transform:translateY(4px);box-shadow:none}
+.err{color:#c0392b;font-weight:700;font-size:14px;min-height:18px;margin-top:8px;text-align:center}
+#done{display:none}
+#done.on{display:block}
+.prev{display:flex;gap:12px;align-items:center}
+.prev canvas{width:120px;height:120px;border-radius:12px;border:3px solid #3b2f27;background:#2f5546;flex:none}
+.prev .m{font-family:"Hi Melody",cursive;font-size:20px;line-height:1.3}
+.prev .m b{color:#b36b00}
+#code{height:110px;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:10px}
+.copy{margin-top:10px;background:#2f5546}
+.ok{background:#e4f5e8;border:2px solid #2f8a4e;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:15px;line-height:1.6}
+.go{display:none;margin-top:10px;background:#5b7fe0}
+.foot{text-align:center;font-size:11px;color:#a8977f;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>우리 반 <b>추억 칠판</b></h1>
+    <p>칠판에 남길 그림과 한마디를 만들어요 🖍️</p>
+  </div>
+
+  <div class="card">
+    <h2><span>1</span>내 이름</h2>
+    <input class="t" id="name" maxlength="12" placeholder="예: 김하늘" autocomplete="off">
+  </div>
+
+  <div class="card">
+    <h2><span>2</span>분필로 그리기</h2>
+    <div class="board"><canvas id="pad"></canvas><div class="hint" id="hint">손가락으로 그려 보세요<br>나, 우리 반, 좋아하는 것… 뭐든 좋아요</div></div>
+    <div class="tray" id="cols"></div>
+    <div class="tray">
+      <div id="wids" style="display:flex;gap:6px"></div>
+      <span class="sp"></span>
+      <button class="tool" id="undo">↶ 되돌리기</button>
+      <button class="tool" id="clear">지우기</button>
+    </div>
+    <div class="gauge" id="gauge"><i></i></div>
+    <div class="gl" id="gl">분필 남은 양</div>
+  </div>
+
+  <div class="card">
+    <h2><span>3</span>우리 반에게 한마디</h2>
+    <textarea class="t" id="msg" maxlength="60" placeholder="예: 1년 동안 같이 웃어 줘서 고마워! 3학년 때도 인사하자"></textarea>
+    <div class="cnt"><span id="mc">0</span> / 60</div>
+  </div>
+
+  <button class="big" id="make">✅ 완성! 코드 만들기</button>
+  <div class="err" id="err"></div>
+
+  <div class="card" id="done">
+    <h2>🎉 완성했어요!</h2>
+    <div class="prev"><canvas id="mini"></canvas><div class="m" id="pm"></div></div>
+    <textarea class="t" id="code" readonly></textarea>
+    <button class="big copy" id="copy">📋 코드 복사하기</button>
+    <div class="ok" id="okmsg">복사한 코드를 <b>선생님이 알려 준 곳</b>(설문지나 단톡방)에 붙여넣으면 끝이에요.<br>고치고 싶으면 다시 그리고 새 코드를 내면 돼요. 같은 이름은 마지막 것만 쓰여요.</div>
+    <button class="big go" id="go">📝 설문지로 가기</button>
+  </div>
+  <div class="foot">우리 반 추억 칠판 · 투머치쌤 · Instagram @too.much.science<br>그림과 글은 이 휴대폰에만 있다가, 내가 코드를 붙여넣을 때만 전달돼요.</div>
+</div>
+
+<script>
+/* ===== 공용 코드 시작: chalk-draw.html(학생 그림판)과 last-chalkboard.html(선생님 프로그램)에 똑같이 들어갑니다 ===== */
+var CHALK_COLORS = ['#f6f3ea', '#ffe27a', '#ffa8cc', '#9fd8ff', '#a8ecc2', '#ffbf80'];
+var CHALK_COLOR_NAMES = ['흰색', '노랑', '분홍', '하늘', '연두', '주황'];
+var CHALK_WIDTHS = [3, 5.5, 9];   // 그림판 256칸 기준 굵기
+var CHALK_FONT = '"Hi Melody","Gaegu","Nanum Pen Script","나눔손글씨 펜","Comic Sans MS","Apple SD Gothic Neo","Malgun Gothic",cursive';
+var GRID = 256;
+
+/* ---------- 칠판 코드: 이름 + 한마디 + 그림 선을 글자 한 줄로 ---------- */
+var ChalkCode = (function () {
+  'use strict';
+  var PREFIX = 'CK1', MAX_NAME = 12, MAX_MSG = 60, MAX_PTS = 3000;
+  function enc(s) { return new TextEncoder().encode(s); }
+  function dec(b) { return new TextDecoder().decode(b); }
+  function cut(s, n) { return Array.from(String(s || '')).slice(0, n).join(''); }
+  function toB64(b) {
+    var s = '', i;
+    for (i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192));
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function fromB64(t) {
+    t = t.replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '=';
+    var s = atob(t), b = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+    return b;
+  }
+  async function pipe(bytes, Stream) {
+    var st = new Stream('deflate-raw'), w = st.writable.getWriter();
+    w.write(bytes).catch(function () { }); w.close().catch(function () { });
+    return new Uint8Array(await new Response(st.readable).arrayBuffer());
+  }
+  // 점을 0~255 칸에 맞추고, 한 번에 127칸보다 멀리 뛰지 않게 사이 점을 넣음
+  function quantize(pts) {
+    var out = [], i, s;
+    for (i = 0; i < pts.length; i += 2) {
+      var x = Math.max(0, Math.min(255, Math.round(pts[i]))), y = Math.max(0, Math.min(255, Math.round(pts[i + 1])));
+      if (out.length) {
+        var px = out[out.length - 2], py = out[out.length - 1];
+        if (px === x && py === y) continue;
+        var steps = Math.ceil(Math.max(Math.abs(x - px), Math.abs(y - py)) / 127);
+        for (s = 1; s < steps; s++) out.push(Math.round(px + (x - px) * s / steps), Math.round(py + (y - py) * s / steps));
+      }
+      out.push(x, y);
+    }
+    return out;
+  }
+  function pack(d) {
+    var a = [1], nb = enc(cut(d.name, MAX_NAME)), mb = enc(cut(d.msg, MAX_MSG)), i, j;
+    a.push(nb.length); for (i = 0; i < nb.length; i++) a.push(nb[i]);
+    a.push(mb.length >> 8, mb.length & 255); for (i = 0; i < mb.length; i++) a.push(mb[i]);
+    var ss = (d.strokes || []).map(function (s) { return { c: s.c, w: s.w, p: quantize(s.p) }; })
+      .filter(function (s) { return s.p.length >= 2; });
+    a.push(ss.length >> 8, ss.length & 255);
+    ss.forEach(function (s) {
+      var n = s.p.length / 2;
+      a.push(((s.c & 15) << 4) | (s.w & 15), n >> 8, n & 255, s.p[0], s.p[1]);
+      for (j = 2; j < s.p.length; j++) a.push((s.p[j] - s.p[j - 2]) & 255);
+    });
+    var sum = 0; for (i = 0; i < a.length; i++) sum = (sum + a[i] * (i % 7 + 1)) & 65535;
+    a.push(sum >> 8, sum & 255);
+    return new Uint8Array(a);
+  }
+  function unpack(b) {
+    if (b.length < 8) throw new Error('short');
+    var L = b.length - 2, sum = 0, i, k = 0;
+    for (i = 0; i < L; i++) sum = (sum + b[i] * (i % 7 + 1)) & 65535;
+    if (sum !== ((b[L] << 8) | b[L + 1])) throw new Error('sum');
+    if (b[k++] !== 1) throw new Error('ver');
+    var nl = b[k++], name = dec(b.subarray(k, k + nl)); k += nl;
+    var ml = (b[k] << 8) | b[k + 1]; k += 2;
+    var msg = dec(b.subarray(k, k + ml)); k += ml;
+    var sc = (b[k] << 8) | b[k + 1]; k += 2;
+    var strokes = [];
+    for (var s = 0; s < sc; s++) {
+      var cw = b[k++], n = (b[k] << 8) | b[k + 1]; k += 2;
+      var p = [b[k], b[k + 1]]; k += 2;
+      for (var j = 2; j < n * 2; j++) { var dl = b[k++]; if (dl > 127) dl -= 256; p.push(p[j - 2] + dl); }
+      if (k > L) throw new Error('len');
+      strokes.push({ c: Math.min(cw >> 4, CHALK_COLORS.length - 1), w: Math.min(cw & 15, CHALK_WIDTHS.length - 1), p: p });
+    }
+    return { name: name, msg: msg, strokes: strokes };
+  }
+  async function encode(d) {
+    var raw = pack(d), z = null;
+    try { if (typeof CompressionStream !== 'undefined') z = await pipe(raw, CompressionStream); } catch (e) { z = null; }
+    return z && z.length < raw.length ? PREFIX + 'Z' + toB64(z) : PREFIX + 'R' + toB64(raw);
+  }
+  async function decode(code) {
+    var m = /CK1([ZR])([A-Za-z0-9_-]+)/.exec(String(code || ''));
+    if (!m) return { ok: false, message: '칠판 코드가 아니에요.' };
+    try {
+      var b = fromB64(m[2]);
+      if (m[1] === 'Z') {
+        if (typeof DecompressionStream === 'undefined') return { ok: false, message: '이 브라우저에서는 코드를 열 수 없어요. 크롬이나 엣지로 열어 주세요.' };
+        b = await pipe(b, DecompressionStream);
+      }
+      var d = unpack(b); d.code = m[0];
+      return { ok: true, data: d };
+    } catch (e) { return { ok: false, message: '코드가 잘렸거나 바뀌었어요. 처음부터 끝까지 다시 복사해 주세요.' }; }
+  }
+  function findAll(text) { return String(text || '').match(/CK1[ZR][A-Za-z0-9_-]{6,}/g) || []; }
+  function countPts(strokes) { var n = 0; (strokes || []).forEach(function (s) { n += s.p.length / 2; }); return n; }
+  return { encode: encode, decode: decode, findAll: findAll, countPts: countPts, pack: pack, unpack: unpack,
+    MAX_NAME: MAX_NAME, MAX_MSG: MAX_MSG, MAX_PTS: MAX_PTS };
+})();
+
+/* ---------- 분필 그리기 ---------- */
+var Chalk = (function () {
+  'use strict';
+  var cache = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  // 분필 가루 느낌: 군데군데 비어 있고 진하기가 고르지 않은 무늬
+  function pattern(g, color) {
+    var m = cache.get(g); if (!m) { m = {}; cache.set(g, m); }
+    if (m[color]) return m[color];
+    var S = 64, c = document.createElement('canvas'); c.width = c.height = S;
+    var x = c.getContext('2d'), im = x.createImageData(S, S), n = parseInt(color.slice(1), 16), r = rng(n);
+    for (var i = 0; i < S * S; i++) {
+      var v = r();
+      im.data[i * 4] = n >> 16; im.data[i * 4 + 1] = (n >> 8) & 255; im.data[i * 4 + 2] = n & 255;
+      im.data[i * 4 + 3] = v < 0.17 ? 0 : Math.round(255 * (0.5 + 0.5 * r()));
+    }
+    x.putImageData(im, 0, 0);
+    return (m[color] = g.createPattern(c, 'repeat'));
+  }
+  // 확대해도 가루 크기가 화면에서 비슷하게 보이도록
+  function grain(g, pat) {
+    if (!pat || !pat.setTransform || !g.getTransform) return;
+    var t = g.getTransform(), s = Math.hypot(t.a, t.b) || 1;
+    try { pat.setTransform(new DOMMatrix().scale(1.4 / s)); } catch (e) { }
+  }
+  /* 그림 그리기. prog: 0~1 (그린 순서대로 여기까지). 돌려주는 값: 마지막으로 그린 점의 위치 */
+  function drawStrokes(g, strokes, x, y, size, prog) {
+    var total = 0, i, j, tip = null;
+    strokes.forEach(function (s) { total += s.p.length / 2; });
+    if (!total) return null;
+    var limit = prog >= 1 ? Infinity : Math.floor(total * Math.max(0, prog));
+    var k = size / GRID, used = 0, base = g.globalAlpha;
+    g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+    for (i = 0; i < strokes.length && used < limit; i++) {
+      var s = strokes[i], n = s.p.length / 2, m = Math.min(n, limit - used); used += n;
+      var pat = pattern(g, CHALK_COLORS[s.c] || CHALK_COLORS[0]); grain(g, pat);
+      var w = (CHALK_WIDTHS[s.w] || CHALK_WIDTHS[1]) * k;
+      g.strokeStyle = pat; g.fillStyle = pat;
+      for (var pass = 0; pass < 2; pass++) {
+        var lw = pass ? w * 1.5 : w, ox = pass ? w * 0.2 : 0, oy = pass ? -w * 0.14 : 0;
+        g.globalAlpha = base * (pass ? 0.4 : 0.95); g.lineWidth = lw;
+        if (m === 1) { g.beginPath(); g.arc(x + s.p[0] * k + ox, y + s.p[1] * k + oy, lw / 2, 0, 6.2832); g.fill(); continue; }
+        g.beginPath(); g.moveTo(x + s.p[0] * k + ox, y + s.p[1] * k + oy);
+        for (j = 1; j < m; j++) g.lineTo(x + s.p[2 * j] * k + ox, y + s.p[2 * j + 1] * k + oy);
+        g.stroke();
+      }
+      tip = { x: x + s.p[2 * (m - 1)] * k, y: y + s.p[2 * (m - 1) + 1] * k };
+    }
+    g.restore();
+    return tip;
+  }
+  /* 분필 글씨. chars: 앞에서부터 몇 글자까지 보일지 */
+  function text(g, str, x, y, color, chars) {
+    var arr = Array.from(String(str));
+    if (chars == null) chars = arr.length;
+    if (chars <= 0) return;
+    var s = chars >= arr.length ? String(str) : arr.slice(0, chars).join('');
+    var pat = pattern(g, color), base = g.globalAlpha, fs = parseFloat(/(\d+(\.\d+)?)px/.exec(g.font)[1]) || 20;
+    grain(g, pat);
+    g.fillStyle = pat;
+    g.globalAlpha = base * 0.96; g.fillText(s, x, y);
+    g.globalAlpha = base * 0.35; g.fillText(s, x + fs * 0.03, y - fs * 0.02);
+    g.globalAlpha = base;
+  }
+  /* 칸 너비에 맞게 줄 나누기 (띄어쓰기 기준, 긴 낱말은 글자 단위로) */
+  function wrap(g, str, maxW) {
+    var out = [];
+    String(str).split('\n').forEach(function (para) {
+      var words = para.split(/\s+/).filter(Boolean), cur = '';
+      if (!words.length) { out.push(''); return; }
+      words.forEach(function (w) {
+        var tr = cur ? cur + ' ' + w : w;
+        if (g.measureText(tr).width <= maxW) { cur = tr; return; }
+        if (cur) { out.push(cur); cur = ''; }
+        var chars = Array.from(w), piece = '';
+        chars.forEach(function (ch) {
+          if (g.measureText(piece + ch).width > maxW && piece) { out.push(piece); piece = ''; }
+          piece += ch;
+        });
+        cur = piece;
+      });
+      if (cur) out.push(cur);
+    });
+    return out;
+  }
+  return { drawStrokes: drawStrokes, text: text, wrap: wrap, pattern: pattern, rng: rng };
+})();
+/* ===== 공용 코드 끝 ===== */
+
+
+(function () {
+  'use strict';
+  var KEY = 'last-chalkboard-draw.v1';
+  var pad = document.getElementById('pad'), g = pad.getContext('2d');
+  var state = { name: '', msg: '', strokes: [], c: 0, w: 1 };
+  var cur = null, dpr = 1, size = 0, boardTex = null;
+  function $(id) { return document.getElementById(id); }
+
+  try { var s0 = JSON.parse(localStorage.getItem(KEY)); if (s0 && Array.isArray(s0.strokes)) state = Object.assign(state, s0); } catch (e) { }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { } }
+
+  // 칠판 바탕 무늬
+  function makeTex() {
+    var c = document.createElement('canvas'); c.width = c.height = 256;
+    var x = c.getContext('2d'), r = Chalk.rng(42);
+    var gr = x.createLinearGradient(0, 0, 256, 256); gr.addColorStop(0, '#325a4a'); gr.addColorStop(1, '#2b4f40');
+    x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
+    for (var i = 0; i < 2600; i++) { x.fillStyle = r() < 0.5 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.05)'; x.fillRect(r() * 256, r() * 256, 1, 1); }
+    for (i = 0; i < 5; i++) {
+      var cx = r() * 256, cy = r() * 256, rad = 40 + r() * 70, rg = x.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      rg.addColorStop(0, 'rgba(255,255,255,.045)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = rg; x.fillRect(0, 0, 256, 256);
+    }
+    return c;
+  }
+  function resize() {
+    var r = pad.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 3); size = r.width;
+    pad.width = Math.round(r.width * dpr); pad.height = Math.round(r.height * dpr);
+    redraw();
+  }
+  function setT() { var s = pad.width / GRID; g.setTransform(s, 0, 0, s, 0, 0); }
+  function redraw() {
+    setT(); if (!boardTex) boardTex = makeTex();
+    g.drawImage(boardTex, 0, 0, GRID, GRID);
+    Chalk.drawStrokes(g, state.strokes, 0, 0, GRID, 1);
+    $('hint').style.display = state.strokes.length ? 'none' : 'flex';
+    updateUI();
+  }
+  function used() { return ChalkCode.countPts(state.strokes) + (cur ? cur.p.length / 2 : 0); }
+  function updateUI() {
+    var u = used(), left = Math.max(0, 1 - u / ChalkCode.MAX_PTS), gg = $('gauge');
+    gg.firstChild.style.width = (left * 100) + '%'; gg.classList.toggle('low', left < 0.2);
+    $('gl').textContent = left <= 0 ? '분필을 다 썼어요! 되돌리기로 조금 지우면 더 그릴 수 있어요.' : '분필 남은 양';
+    $('undo').disabled = !state.strokes.length; $('clear').disabled = !state.strokes.length;
+  }
+  // 펜 따라 그리기
+  function pos(e) { var r = pad.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * GRID, (e.clientY - r.top) / r.height * GRID]; }
+  pad.addEventListener('pointerdown', function (e) {
+    if (used() >= ChalkCode.MAX_PTS) { updateUI(); return; }
+    e.preventDefault(); pad.setPointerCapture(e.pointerId);
+    var p = pos(e); cur = { c: state.c, w: state.w, p: [p[0], p[1]] };
+    $('hint').style.display = 'none';
+    setT(); Chalk.drawStrokes(g, [cur], 0, 0, GRID, 1);
+  });
+  pad.addEventListener('pointermove', function (e) {
+    if (!cur) return; e.preventDefault();
+    var list = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    list.forEach(function (ev) {
+      var p = pos(ev), n = cur.p.length;
+      if (Math.hypot(p[0] - cur.p[n - 2], p[1] - cur.p[n - 1]) < 0.9) return;
+      if (used() >= ChalkCode.MAX_PTS) return;
+      setT(); Chalk.drawStrokes(g, [{ c: cur.c, w: cur.w, p: [cur.p[n - 2], cur.p[n - 1], p[0], p[1]] }], 0, 0, GRID, 1);
+      cur.p.push(p[0], p[1]);
+    });
+    updateUI();
+  });
+  function end() {
+    if (!cur) return;
+    cur.p = rdp(cur.p, 0.55).map(function (v) { return Math.max(0, Math.min(255, Math.round(v))); });
+    state.strokes.push(cur); cur = null; save(); redraw();
+  }
+  pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end); pad.addEventListener('lostpointercapture', end);
+
+  function rdp(p, eps) {
+    var n = p.length / 2, i; if (n < 3) return p.slice();
+    var keep = new Uint8Array(n), st = [[0, n - 1]]; keep[0] = keep[n - 1] = 1;
+    while (st.length) {
+      var s = st.pop(), a = s[0], b = s[1], ax = p[2 * a], ay = p[2 * a + 1], dx = p[2 * b] - ax, dy = p[2 * b + 1] - ay, L = Math.hypot(dx, dy), md = 0, mi = -1;
+      for (i = a + 1; i < b; i++) {
+        var d = L < 1e-6 ? Math.hypot(p[2 * i] - ax, p[2 * i + 1] - ay) : Math.abs(dy * (p[2 * i] - ax) - dx * (p[2 * i + 1] - ay)) / L;
+        if (d > md) { md = d; mi = i; }
+      }
+      if (md > eps) { keep[mi] = 1; st.push([a, mi], [mi, b]); }
+    }
+    var out = []; for (i = 0; i < n; i++) if (keep[i]) out.push(p[2 * i], p[2 * i + 1]);
+    return out;
+  }
+
+  // 분필 색과 굵기
+  CHALK_COLORS.forEach(function (c, i) {
+    var b = document.createElement('button'); b.className = 'col'; b.style.background = c; b.title = CHALK_COLOR_NAMES[i];
+    b.onclick = function () { state.c = i; save(); tools(); }; $('cols').appendChild(b);
+  });
+  [8, 13, 20].forEach(function (px, i) {
+    var b = document.createElement('button'); b.className = 'wid'; b.title = ['가늘게', '보통', '굵게'][i];
+    var dot = document.createElement('i'); dot.style.width = dot.style.height = px + 'px'; b.appendChild(dot);
+    b.onclick = function () { state.w = i; save(); tools(); }; $('wids').appendChild(b);
+  });
+  function tools() {
+    Array.prototype.forEach.call($('cols').children, function (b, i) { b.classList.toggle('on', i === state.c); });
+    Array.prototype.forEach.call($('wids').children, function (b, i) { b.classList.toggle('on', i === state.w); });
+  }
+  $('undo').onclick = function () { state.strokes.pop(); save(); redraw(); };
+  $('clear').onclick = function () { if (!window.confirm('그림을 모두 지울까요?')) return; state.strokes = []; save(); redraw(); };
+
+  // 이름, 한마디
+  $('name').value = state.name || ''; $('msg').value = state.msg || '';
+  function mc() { $('mc').textContent = Array.from($('msg').value).length; }
+  $('name').oninput = function () { state.name = this.value; save(); };
+  $('msg').oninput = function () { state.msg = this.value; save(); mc(); };
+  mc();
+
+  // 코드 만들기
+  $('make').onclick = async function () {
+    var err = $('err'); err.textContent = '';
+    var name = $('name').value.trim(), msg = $('msg').value.trim().replace(/\s+/g, ' ');
+    if (!name) { err.textContent = '이름을 적어 주세요.'; $('name').focus(); return; }
+    if (!state.strokes.length) { err.textContent = '칠판에 그림을 하나 그려 주세요.'; return; }
+    if (!msg) { err.textContent = '한마디를 적어 주세요.'; $('msg').focus(); return; }
+    var code = await ChalkCode.encode({ name: name, msg: msg, strokes: state.strokes });
+    var back = await ChalkCode.decode(code);
+    if (!back.ok) { err.textContent = '코드를 만들지 못했어요. 크롬이나 사파리 최신 버전으로 열어 주세요.'; return; }
+    $('code').value = code;
+    var mini = $('mini'), m = mini.getContext('2d'), d2 = Math.min(window.devicePixelRatio || 1, 3);
+    mini.width = mini.height = Math.round(120 * d2); m.setTransform(mini.width / GRID, 0, 0, mini.width / GRID, 0, 0);
+    m.drawImage(boardTex, 0, 0, GRID, GRID); Chalk.drawStrokes(m, back.data.strokes, 0, 0, GRID, 1);
+    $('pm').innerHTML = ''; var b = document.createElement('b'); b.textContent = back.data.name; $('pm').appendChild(b);
+    $('pm').appendChild(document.createElement('br')); $('pm').appendChild(document.createTextNode(back.data.msg));
+    $('done').classList.add('on'); $('done').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  $('copy').onclick = function () {
+    var t = $('code'), btn = this;
+    function ok() { btn.textContent = '✅ 복사했어요!'; setTimeout(function () { btn.textContent = '📋 코드 복사하기'; }, 2000); if (form) $('go').style.display = 'block'; }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(ok, function () { t.select(); document.execCommand('copy'); ok(); });
+    else { t.select(); document.execCommand('copy'); ok(); }
+  };
+  // 선생님이 주소 뒤에 ?form=설문지주소 를 붙이면 설문지로 가는 버튼이 생김
+  var form = null;
+  try { var f = new URLSearchParams(location.search).get('form'); if (f && /^https:\/\//.test(f)) form = f; } catch (e) { }
+  $('go').onclick = function () { if (form) location.href = form; };
+
+  tools(); window.addEventListener('resize', resize); resize();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { });
+})();
+</script>
+</body>
+</html>
