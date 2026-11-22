@@ -39,12 +39,13 @@ textarea.inp{resize:vertical;line-height:1.5}
 .paste{min-height:110px;font-size:13px;font-family:ui-monospace,Consolas,monospace}
 .res{border-radius:12px;padding:10px 14px;margin-top:10px;font-weight:700;line-height:1.7;font-size:15px}
 .res.ok{background:#e4f5e8;border:2px solid #2f8a4e}.res.bad{background:#ffe3dc;border:2px solid #c0392b}
-.stus{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
-.stu{position:relative;background:#2f5546;border:2.5px solid #3b2f27;border-radius:14px;padding:8px;color:#f6f3ea}
+.stus{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:12px;max-height:390px;overflow-y:auto;padding:2px 4px 2px 0}
+.stu{position:relative;background:#2f5546;border:2px solid #3b2f27;border-radius:12px;padding:5px;color:#f6f3ea}
 .stu canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:8px}
-.stu b{display:block;font-family:"Hi Melody",cursive;font-size:20px;color:#ffe27a;margin-top:4px}
-.stu p{margin:0;font-family:"Hi Melody",cursive;font-size:16px;line-height:1.25;color:#eef3ee;word-break:keep-all}
-.stu .x{position:absolute;top:4px;right:6px;border:0;background:rgba(0,0,0,.35);color:#fff;border-radius:999px;width:26px;height:26px;cursor:pointer;font-size:14px}
+.stu b{display:block;font-family:"Hi Melody",cursive;font-size:16px;color:#ffe27a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stu p{margin:0;font-family:"Hi Melody",cursive;font-size:13px;line-height:1.2;color:#eef3ee;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stu .x{position:absolute;top:3px;right:3px;border:0;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:22px;height:22px;cursor:pointer;font-size:12px}
+.stu p:hover{-webkit-line-clamp:unset}
 .cnt{font-family:"Hi Melody",cursive;font-size:22px;margin-left:auto}
 .photos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .ph{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:2px solid #3b2f27;background:#ddd}
@@ -82,6 +83,10 @@ details summary{cursor:pointer;font-weight:700}
 #endBox.on{display:flex}
 #endBox .btn{font-size:18px;padding:12px 18px}
 .mark{position:absolute;right:12px;bottom:6px;font-size:11px;color:#fff;opacity:.28;pointer-events:none}
+#show.yt #stage{height:calc(100% - 216px)}
+#show.yt::after{content:"";position:absolute;left:0;right:0;bottom:0;height:216px;background:#d8c3a0;z-index:-1}
+#show.yt{background:#d8c3a0}
+@media (max-width:640px){.wrap{padding:12px 10px 50px}.hero h1{font-size:38px}.hero p{font-size:19px}.card{padding:12px}.card h2{font-size:24px}.start{font-size:30px}#bar{gap:4px;padding:6px 8px;font-size:13px}#bar input[type=range]{width:90px}#bar button{padding:6px 8px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -442,14 +447,14 @@ var Music = (function () {
   function loadYT(id) {
     return api().then(function () {
       return new Promise(function (res, rej) {
-        if (!box) { box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;width:320px;height:180px'; document.body.appendChild(box); }
+        if (!box) { box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;width:356px;height:200px;z-index:60;border-radius:10px;overflow:hidden;box-shadow:0 4px 0 #3b2f27;border:3px solid #3b2f27;background:#000'; document.body.appendChild(box); }
         if (yt) { try { yt.destroy(); } catch (e) { } yt = null; }
         box.innerHTML = '<div id="ytPlayer"></div>';
         var done = false, to = setTimeout(function () { fin(false, new Error('timeout')); }, 15000);
         function fin(ok, v) { if (done) return; done = true; clearTimeout(to); if (ok) res(v); else rej(v); }
         var pv = { controls: 0, disablekb: 1, playsinline: 1, rel: 0 };
         if (/^https?:/.test(location.protocol)) pv.origin = location.origin;
-        yt = new YT.Player('ytPlayer', { width: 320, height: 180, videoId: id, playerVars: pv, events: {
+        yt = new YT.Player('ytPlayer', { width: 356, height: 200, videoId: id, playerVars: pv, events: {
           onReady: function () {
             var d = yt.getDuration();
             if (d > 0) return fin(true, { dur: d, title: (yt.getVideoData() || {}).title || '' });
@@ -486,7 +491,9 @@ var Music = (function () {
     }
     return null;
   }
-  return { ytId: ytId, loadYT: loadYT, player: player };
+  /* 상영 중에는 유튜브 규정대로 플레이어를 화면 아래쪽에 보이게 둠 (200x200 이상) */
+  function dock(on) { if (!box) return; if (on) { box.style.left = '12px'; box.style.top = 'auto'; box.style.bottom = '8px'; } else { box.style.left = '-10000px'; box.style.top = '0'; box.style.bottom = 'auto'; } }
+  return { ytId: ytId, loadYT: loadYT, player: player, dock: dock };
 })();
 
 /* =====================================================================
@@ -862,10 +869,12 @@ var Show = (function () {
     P = plan(cells.length, photos.length, D.T);
     bg = document.createElement('canvas'); bg.width = W * BQ; bg.height = H * BQ;
     var bx = bg.getContext('2d'); bx.setTransform(BQ, 0, 0, BQ, 0, 0); drawBackground(bx);
-    el.show.classList.add('on'); resize();
+    el.show.classList.add('on');
     if (mus) { mus.pause(); mus = null; }
     if (D.music) { mus = Music.player(D.music.kind, D.music.url, !musicMode); if (mus) { mus.vol(D.vol); mus.seek(0); } }
     if (!mus) musicMode = false;
+    var isYT = !!(mus && D.music.kind === 'yt'); el.show.classList.toggle('yt', isYT); Music.dock(isYT);
+    resize();
     t = 0; paused = false; finished = false; clicked = false; el.end.classList.remove('on'); el.play.textContent = '⏸ 멈춤';
     if (D.fullscreen !== false && !(document.fullscreenElement || document.webkitFullscreenElement)) full();
     if (mus) mus.play();
@@ -873,7 +882,7 @@ var Show = (function () {
   }
   function exit() {
     if (!running) return;
-    running = false; cancelAnimationFrame(raf); if (mus) mus.pause();
+    running = false; cancelAnimationFrame(raf); if (mus) mus.pause(); Music.dock(false); el.show.classList.remove('yt');
     if (document.fullscreenElement || document.webkitFullscreenElement) full();
     el.show.classList.remove('on');
   }
@@ -959,11 +968,11 @@ var App = (function () {
     var box = $('stus'); box.innerHTML = '';
     S.students.forEach(function (s, i) {
       var d = document.createElement('div'); d.className = 'stu';
-      var c = document.createElement('canvas'); c.width = c.height = 240;
-      var x = c.getContext('2d'); x.setTransform(240 / 256, 0, 0, 240 / 256, 0, 0); x.drawImage(boardTex(), 0, 0); Chalk.drawStrokes(x, s.strokes, 0, 0, 256, 1);
+      var c = document.createElement('canvas'); c.width = c.height = 200;
+      var x = c.getContext('2d'); x.setTransform(200 / 256, 0, 0, 200 / 256, 0, 0); x.drawImage(boardTex(), 0, 0); Chalk.drawStrokes(x, s.strokes, 0, 0, 256, 1);
       d.appendChild(c);
       var b = document.createElement('b'); b.textContent = (i + 1) + '. ' + s.name; d.appendChild(b);
-      var p = document.createElement('p'); p.textContent = s.msg; d.appendChild(p);
+      var p = document.createElement('p'); p.textContent = s.msg; p.title = s.msg; d.appendChild(p);
       var xb = document.createElement('button'); xb.className = 'x'; xb.textContent = '✕'; xb.title = '빼기';
       xb.onclick = function () { if (!window.confirm(s.name + ' 학생을 칠판에서 뺄까요?')) return; S.students.splice(S.students.indexOf(s), 1); save(); renderStudents(); est(); };
       d.appendChild(xb); box.appendChild(d);
@@ -1011,6 +1020,8 @@ var App = (function () {
     else if (p.per < 5) { box.className = 'est warn'; html += '<br>한 명이 조금 빠르게 지나가요. 여유 있게 보려면 ' + fmtMin(Math.ceil(need * 2) / 2) + ' 정도를 권해요.'; btn.disabled = false; }
     else if (p.per > 16) { box.className = 'est warn'; html += '<br>한 명에 시간이 넉넉한 편이에요. 지루하면 시간을 줄여 보세요.'; btn.disabled = false; }
     else { box.className = 'est'; html += '<br>알맞은 속도예요 👍'; btn.disabled = false; }
+    if (p.ok && photos.length && p.perPh < 2) { box.className = 'est warn'; html += '<br>사진이 많아서 한 장이 ' + p.perPh.toFixed(1) + '초만 보여요. 사진을 줄이거나 시간을 늘려 보세요.'; }
+    if (n > 40) html += '<br>학생이 ' + n + '명이라 칠판 칸이 작아져요. 상영은 되지만 마지막 칠판 그림에서 글씨가 작게 보여요.';
     box.innerHTML = html;
   }
   function setMusic(m, msg) {
