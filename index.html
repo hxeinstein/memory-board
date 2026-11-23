@@ -21,6 +21,11 @@ button,input,textarea,select{font-family:inherit;color:inherit}
 .hero .flow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:21px}
 .hero .flow span{border:2px dashed rgba(246,243,234,.55);border-radius:999px;padding:3px 14px}
 .hero .flow i{font-style:normal;color:#ffe27a}
+.hero .demo{border:3px solid #3b2f27;border-radius:999px;background:#ffe27a;color:#3b2f27;font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:21px;padding:4px 18px;cursor:pointer;box-shadow:0 4px 0 #3b2f27;margin-left:8px}
+.hero .demo:active{transform:translateY(3px);box-shadow:none}
+.hero .demo:disabled{opacity:.6;cursor:wait}
+.hero .demoNote{font-family:inherit;font-size:14px;color:#cfe0d5;margin:10px 0 0}
+@media (min-width:900px){.hero .flow{flex-wrap:nowrap;font-size:19px;gap:8px;align-items:center}.hero .flow span{padding:3px 11px;white-space:nowrap}.hero .demo{font-size:19px;padding:4px 14px;margin-left:4px;white-space:nowrap}}
 .card{background:#fffaf0;border:2.5px solid #3b2f27;border-radius:18px;padding:16px 18px;margin:18px 0}
 .card h2{font-family:"Do Hyeon","Malgun Gothic",sans-serif;font-size:28px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
 .card h2 .n{display:inline-block;background:#ffe27a;border:2px solid #3b2f27;border-radius:999px;width:34px;height:34px;line-height:30px;text-align:center;font-size:22px}
@@ -83,9 +88,6 @@ details summary{cursor:pointer;font-weight:700}
 #endBox.on{display:flex}
 #endBox .btn{font-size:18px;padding:12px 18px}
 .mark{position:absolute;right:12px;bottom:6px;font-size:11px;color:#fff;opacity:.28;pointer-events:none}
-#show.yt #stage{height:calc(100% - 216px)}
-#show.yt::after{content:"";position:absolute;left:0;right:0;bottom:0;height:216px;background:#d8c3a0;z-index:-1}
-#show.yt{background:#d8c3a0}
 @media (max-width:640px){.wrap{padding:12px 10px 50px}.hero h1{font-size:38px}.hero p{font-size:19px}.card{padding:12px}.card h2{font-size:24px}.start{font-size:30px}#bar{gap:4px;padding:6px 8px;font-size:13px}#bar input[type=range]{width:90px}#bar button{padding:6px 8px;font-size:13px}}
 </style>
 </head>
@@ -94,7 +96,8 @@ details summary{cursor:pointer;font-weight:700}
   <div class="hero">
     <h1>우리 반 <b>추억 칠판</b></h1>
     <p>사진으로 1년을 돌아보고, 친구들이 그린 그림과 한마디로 칠판을 채워요</p>
-    <div class="flow"><span>📷 사진 보며 돌아보기</span><i>→</i><span>🖍️ 한 명씩 칠판 채우기</span><i>→</i><span>💡 불 끄고 인사</span></div>
+    <div class="flow"><span>📷 사진 보며 돌아보기</span><i>→</i><span>🖍️ 한 명씩 칠판 채우기</span><i>→</i><span>💡 불 끄고 인사</span><button class="demo" id="demoBtn">▶ 예시로 체험하기</button></div>
+    <p class="demoNote" id="demoNote">예시 학생 16명 · 3월~12월 사진 · 잔잔한 배경음악으로 2분 30초 동안 전체 흐름을 보여 줘요. 내 학생 목록은 바뀌지 않아요.</p>
   </div>
 
   <div class="card">
@@ -111,7 +114,6 @@ details summary{cursor:pointer;font-weight:700}
     <div id="pasteRes"></div>
     <div class="row" style="margin-top:10px">
       <button class="btn ghost" id="shuffle">🔀 순서 섞기</button>
-      <button class="btn ghost" id="sample">✨ 예시 학생으로 체험하기</button>
       <span style="flex:1"></span>
       <button class="btn ghost" id="clearStu">모두 지우기</button>
     </div>
@@ -447,14 +449,14 @@ var Music = (function () {
   function loadYT(id) {
     return api().then(function () {
       return new Promise(function (res, rej) {
-        if (!box) { box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;width:356px;height:200px;z-index:60;border-radius:10px;overflow:hidden;box-shadow:0 4px 0 #3b2f27;border:3px solid #3b2f27;background:#000'; document.body.appendChild(box); }
+        if (!box) { box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;width:280px;height:200px;z-index:60;border-radius:10px;overflow:hidden;box-shadow:0 3px 0 rgba(59,47,39,.6);border:3px solid #3b2f27;background:#000'; document.body.appendChild(box); }
         if (yt) { try { yt.destroy(); } catch (e) { } yt = null; }
         box.innerHTML = '<div id="ytPlayer"></div>';
         var done = false, to = setTimeout(function () { fin(false, new Error('timeout')); }, 15000);
         function fin(ok, v) { if (done) return; done = true; clearTimeout(to); if (ok) res(v); else rej(v); }
         var pv = { controls: 0, disablekb: 1, playsinline: 1, rel: 0 };
         if (/^https?:/.test(location.protocol)) pv.origin = location.origin;
-        yt = new YT.Player('ytPlayer', { width: 356, height: 200, videoId: id, playerVars: pv, events: {
+        yt = new YT.Player('ytPlayer', { width: 280, height: 200, videoId: id, playerVars: pv, events: {
           onReady: function () {
             var d = yt.getDuration();
             if (d > 0) return fin(true, { dur: d, title: (yt.getVideoData() || {}).title || '' });
@@ -492,7 +494,7 @@ var Music = (function () {
     return null;
   }
   /* 상영 중에는 유튜브 규정대로 플레이어를 화면 아래쪽에 보이게 둠 (200x200 이상) */
-  function dock(on) { if (!box) return; if (on) { box.style.left = '12px'; box.style.top = 'auto'; box.style.bottom = '8px'; } else { box.style.left = '-10000px'; box.style.top = '0'; box.style.bottom = 'auto'; } }
+  function dock(on) { if (!box) return; if (on) { box.style.left = '10px'; box.style.top = 'auto'; box.style.bottom = '10px'; } else { box.style.left = '-10000px'; box.style.top = '0'; box.style.bottom = 'auto'; } }
   return { ytId: ytId, loadYT: loadYT, player: player, dock: dock };
 })();
 
@@ -525,16 +527,34 @@ var Show = (function () {
   }
 
   /* ---------- 칠판 칸 나누기 ---------- */
-  function layout(n) {
+  /* avoid: 유튜브 플레이어가 덮는 왼쪽 아래 자리 {x, y} (그 왼쪽·아래 칸은 비워 둠) */
+  function slots(n, cols, avoid) {
+    for (var rows = Math.ceil(n / cols); rows <= n + 4; rows++) {
+      var cw = REGION.w / cols, ch = REGION.h / rows, list = [], i;
+      for (i = 0; i < rows * cols; i++) {
+        var row = Math.floor(i / cols), col = i % cols, x = REGION.x + col * cw, y = REGION.y + row * ch;
+        if (avoid && x < avoid.x && y + ch > avoid.y) continue;
+        list.push({ row: row, col: col });
+      }
+      if (list.length >= n) {   // 남는 칸은 한쪽에 몰리지 않게 골고루 비움
+        var pick = [], k; for (k = 0; k < n; k++) pick.push(list[Math.floor(k * list.length / n)]);
+        return { rows: rows, cw: cw, ch: ch, list: pick };
+      }
+    }
+    return null;
+  }
+  function layout(n, avoid) {
     var best = null, cols, i;
     for (cols = 1; cols <= n; cols++) {
-      var rows = Math.ceil(n / cols), cw = REGION.w / cols, ch = REGION.h / rows, sc = Math.abs(Math.log((cw / ch) / 1.75));
-      if (!best || sc < best.sc) best = { cols: cols, rows: rows, cw: cw, ch: ch, sc: sc };
+      var sl = slots(n, cols, avoid); if (!sl) continue;
+      var sc = Math.abs(Math.log((sl.cw / sl.ch) / 1.75));
+      if (!best || sc < best.sc) best = { cols: cols, rows: sl.rows, cw: sl.cw, ch: sl.ch, sc: sc, list: sl.list };
     }
     var r = Chalk.rng(n * 131 + 7), out = [];
     for (i = 0; i < n; i++) {
-      var row = Math.floor(i / best.cols), col = i % best.cols, inRow = Math.min(best.cols, n - row * best.cols);
-      var x0 = REGION.x + (REGION.w - inRow * best.cw) / 2;
+      var row = best.list[i].row, col = best.list[i].col, inRow = 0;
+      best.list.forEach(function (q) { if (q.row === row) inRow++; });
+      var x0 = REGION.x + (avoid ? 0 : (REGION.w - inRow * best.cw) / 2);
       // 학생들이 칠판 여기저기에 쓴 것처럼: 대부분 살짝, 셋 중 하나는 크게 기울임
       var rot = r() < 0.64 ? (r() - 0.5) * 0.2 : (r() < 0.5 ? -1 : 1) * (0.2 + r() * 0.2);
       var tc = r(), tcol = tc < 0.5 ? 0 : tc < 0.66 ? 1 : tc < 0.8 ? 2 : tc < 0.92 ? 3 : 4;
@@ -543,8 +563,8 @@ var Show = (function () {
     }
     return out;
   }
-  function prepCells(students) {
-    var L = layout(students.length), m = document.createElement('canvas').getContext('2d');
+  function prepCells(students, avoid) {
+    var L = layout(students.length, avoid), m = document.createElement('canvas').getContext('2d');
     return students.map(function (st, i) {
       var c = Object.assign({}, L[i], { d: st }), ch = c.h, cw = c.w, f, lines, nf;
       c.ds = Math.min(ch * 0.9, cw * 0.5); c.dy = -c.ds / 2;
@@ -838,7 +858,7 @@ var Show = (function () {
   function full() {
     var d = document;
     if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
-    else { var f = el.show.requestFullscreen || el.show.webkitRequestFullscreen; if (f) { try { var pr = f.call(el.show); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { } } }
+    else { var de = d.documentElement, f = de.requestFullscreen || de.webkitRequestFullscreen; if (f) { try { var pr = f.call(de); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { } } }
   }
   function onKey(e) {
     if (!running) return;
@@ -860,6 +880,8 @@ var Show = (function () {
     el.seek.oninput = function () { seek(+el.seek.value); };
     el.seek.onchange = function () { el.drag = false; el.seek.blur(); };
     document.getElementById('bFull').onclick = full;
+    function fsLabel() { var on = !!(document.fullscreenElement || document.webkitFullscreenElement); document.getElementById('bFull').textContent = on ? '최소화' : '전체 화면'; }
+    document.addEventListener('fullscreenchange', fsLabel); document.addEventListener('webkitfullscreenchange', fsLabel);
     document.getElementById('bExit').onclick = exit;
     document.getElementById('eSave').onclick = savePng;
     document.getElementById('eAgain').onclick = function () { setPaused(false); seek(0); };
@@ -871,9 +893,8 @@ var Show = (function () {
   async function start(data) {
     bind(); D = data;
     try { if (document.fonts) { await Promise.race([document.fonts.load('700 40px "Hi Melody"'), new Promise(function (r) { setTimeout(r, 2500); })]); } } catch (e) { }
-    photos = D.photos; cells = prepCells(D.students); doneC = null; doneN = 0;
+    photos = D.photos; doneC = null; doneN = 0;
     musicMode = D.mode === 'music' && !!D.music;
-    P = plan(cells.length, photos.length, D.T);
     bg = document.createElement('canvas'); bg.width = W * BQ; bg.height = H * BQ;
     var bx = bg.getContext('2d'); bx.setTransform(BQ, 0, 0, BQ, 0, 0); drawBackground(bx);
     el.show.classList.add('on');
@@ -882,6 +903,14 @@ var Show = (function () {
     if (!mus) musicMode = false;
     var isYT = !!(mus && D.music.kind === 'yt'); el.show.classList.toggle('yt', isYT); Music.dock(isYT);
     resize();
+    // 유튜브 플레이어(왼쪽 아래 280x200)가 덮는 칠판 자리를 계산해서 그 칸은 비워 둠
+    var avoid = null;
+    if (isYT || D.testAvoid) {
+      var cw = cv.clientWidth, chh = cv.clientHeight, kc = Math.min(cw / W, chh / H), ox = (cw - W * kc) / 2, oy = (chh - H * kc) / 2;
+      avoid = { x: (10 + 286 + 14 - ox) / kc, y: (chh - 10 - 206 - 14 - oy) / kc };
+    }
+    cells = prepCells(D.students, avoid);
+    P = plan(cells.length, photos.length, D.T);
     t = 0; paused = false; finished = false; clicked = false; el.end.classList.remove('on'); el.play.textContent = '⏸ 멈춤';
     if (D.fullscreen !== false && !(document.fullscreenElement || document.webkitFullscreenElement)) full();
     if (mus) mus.play();
@@ -913,6 +942,141 @@ var Show = (function () {
 /* =====================================================================
    선생님 화면
    ===================================================================== */
+/* =====================================================================
+   예시 체험: 3월~12월 그림 사진, 잔잔한 배경음악을 이 자리에서 만듦
+   ===================================================================== */
+var Demo = (function () {
+  'use strict';
+  var cache = null;
+  var MONTHS = [
+    ['3월', '새 학기 첫날', ['#bfe3ff', '#eaf6ff'], 'school'], ['4월', '벚꽃 아래에서', ['#ffd9e6', '#fff1f5'], 'blossom'],
+    ['5월', '체육대회', ['#9fd8ff', '#e6f6ff'], 'sports'], ['6월', '실습실에서', ['#d7e3ea', '#f3f7f9'], 'gear'],
+    ['7월', '기말고사 끝!', ['#ffe08a', '#fff6d6'], 'sun'], ['8월', '여름방학', ['#7fd0f0', '#d8f3ff'], 'sea'],
+    ['9월', '다시 만난 교실', ['#f7e1c3', '#fff7ec'], 'class'], ['10월', '학교 축제', ['#ffb98a', '#ffe9d9'], 'fest'],
+    ['11월', '시험 기간', ['#e9c99a', '#fbf0de'], 'books'], ['12월', '첫눈 온 날', ['#b9c6e6', '#eef2fb'], 'snow']
+  ];
+  function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function circle(g, x, y, r, c) { g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill(); }
+  function cloud(g, x, y, s) { [[0, 0, 40], [38, -14, 46], [80, 0, 38], [40, 12, 40]].forEach(function (c) { circle(g, x + c[0] * s, y + c[1] * s, c[2] * s, 'rgba(255,255,255,.95)'); }); }
+  function people(g, x, y, n, r) { // 동그란 얼굴의 학생들
+    var cols = ['#ff9a8a', '#8ec9ff', '#ffd36b', '#9be0b4', '#c9a7ff', '#ffb36b'];
+    for (var i = 0; i < n; i++) {
+      var px = x + i * 70, py = y + (i % 2) * 8;
+      g.fillStyle = cols[(i + Math.floor(r() * 6)) % 6]; rr(g, px - 24, py + 26, 48, 58, 18); g.fill();
+      circle(g, px, py, 26, '#ffe2c6'); circle(g, px - 9, py - 2, 3, '#3b2f27'); circle(g, px + 9, py - 2, 3, '#3b2f27');
+      g.strokeStyle = '#3b2f27'; g.lineWidth = 3; g.beginPath(); g.arc(px, py + 6, 9, 0.2, Math.PI - 0.2); g.stroke();
+      g.fillStyle = '#4a3528'; g.beginPath(); g.arc(px, py - 6, 27, Math.PI * 1.05, Math.PI * 1.95); g.fill();
+    }
+  }
+  function scene(g, W, H, kind, r) {
+    var i;
+    g.fillStyle = '#9ed38a'; g.fillRect(0, H * 0.72, W, H * 0.28);
+    if (kind === 'school' || kind === 'blossom') {
+      g.fillStyle = '#f4efe6'; g.fillRect(W * 0.45, H * 0.3, W * 0.45, H * 0.42); g.fillStyle = '#e4dccd'; g.fillRect(W * 0.62, H * 0.2, W * 0.11, H * 0.12);
+      circle(g, W * 0.675, H * 0.26, 22, '#fff'); g.fillStyle = '#8fc3e8';
+      for (i = 0; i < 12; i++) g.fillRect(W * 0.48 + (i % 6) * W * 0.068, H * 0.37 + Math.floor(i / 6) * H * 0.14, W * 0.045, H * 0.08);
+      g.fillStyle = '#8a6a4c'; g.fillRect(W * 0.2, H * 0.45, 26, H * 0.3);
+      var pink = kind === 'blossom' ? 1 : 0.55;
+      for (i = 0; i < 26; i++) circle(g, W * 0.21 + (r() - 0.5) * 300, H * 0.38 + (r() - 0.5) * 200, 30 + r() * 30, 'rgba(255,' + (170 + r() * 40 | 0) + ',' + (200 + r() * 30 | 0) + ',' + pink + ')');
+      if (kind === 'blossom') for (i = 0; i < 40; i++) circle(g, r() * W, r() * H * 0.9, 5, 'rgba(255,190,215,.9)');
+      people(g, W * 0.12, H * 0.68, kind === 'school' ? 4 : 3, r);
+    } else if (kind === 'sports') {
+      g.strokeStyle = '#fff'; g.lineWidth = 6; for (i = 0; i < 3; i++) { g.beginPath(); g.ellipse(W / 2, H * 0.86, W * (0.3 + i * 0.07), H * (0.08 + i * 0.03), 0, 0, 6.2832); g.stroke(); }
+      var fc = ['#ff6b6b', '#ffd36b', '#6bc6ff', '#7ee08a', '#c9a7ff'];
+      g.strokeStyle = '#7a6a58'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, H * 0.18); g.quadraticCurveTo(W / 2, H * 0.32, W, H * 0.18); g.stroke();
+      for (i = 0; i < 16; i++) { var fx = i / 15 * W, fy = H * 0.18 + Math.sin(i / 15 * Math.PI) * H * 0.07; g.fillStyle = fc[i % 5]; g.beginPath(); g.moveTo(fx - 18, fy); g.lineTo(fx + 18, fy); g.lineTo(fx, fy + 40); g.fill(); }
+      people(g, W * 0.25, H * 0.62, 6, r);
+    } else if (kind === 'gear') {
+      g.fillStyle = '#c9d4db'; g.fillRect(0, H * 0.72, W, H * 0.28);
+      function gear(cx, cy, R, c, n) { g.fillStyle = c; g.beginPath(); for (var k = 0; k < n * 2; k++) { var a = k * Math.PI / n, rr2 = k % 2 ? R * 0.8 : R; g.lineTo(cx + Math.cos(a) * rr2, cy + Math.sin(a) * rr2); } g.fill(); circle(g, cx, cy, R * 0.32, '#eef3f6'); }
+      gear(W * 0.72, H * 0.38, 120, '#7f93a3', 12); gear(W * 0.86, H * 0.6, 80, '#f2a65a', 10); gear(W * 0.58, H * 0.62, 60, '#5fa8d3', 9);
+      g.fillStyle = '#6b7c88'; g.fillRect(W * 0.08, H * 0.5, W * 0.36, H * 0.22); g.fillStyle = '#ffd36b'; g.fillRect(W * 0.1, H * 0.53, W * 0.32, H * 0.04);
+      people(g, W * 0.14, H * 0.4, 3, r);
+    } else if (kind === 'sun' || kind === 'sea') {
+      circle(g, W * 0.8, H * 0.22, 80, '#ffcf4a'); circle(g, W * 0.8, H * 0.22, 110, 'rgba(255,207,74,.3)');
+      if (kind === 'sea') { g.fillStyle = '#3fb0e0'; g.fillRect(0, H * 0.5, W, H * 0.22); g.fillStyle = '#f5dfb0'; g.fillRect(0, H * 0.72, W, H * 0.28); g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = 5; for (i = 0; i < 6; i++) { g.beginPath(); g.arc(W * (0.1 + i * 0.16), H * 0.6, 30, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); } }
+      else { for (i = 0; i < 3; i++) { var wx = W * (0.15 + i * 0.12), wy = H * 0.8; g.fillStyle = '#4caf50'; g.beginPath(); g.arc(wx, wy, 60, 0, Math.PI); g.fill(); g.fillStyle = '#ff6b6b'; g.beginPath(); g.arc(wx, wy, 48, 0, Math.PI); g.fill(); } }
+      people(g, W * 0.45, H * 0.62, 3, r);
+    } else if (kind === 'class') {
+      g.fillStyle = '#e8d6b8'; g.fillRect(0, H * 0.72, W, H * 0.28); g.fillStyle = '#2f5546'; rr(g, W * 0.18, H * 0.12, W * 0.64, H * 0.34, 12); g.fill();
+      g.fillStyle = '#f6f3ea'; g.font = '700 44px "Do Hyeon", sans-serif'; g.textAlign = 'center'; g.fillText('2학기도 잘 부탁해!', W / 2, H * 0.31);
+      g.fillStyle = '#b98a5a'; for (i = 0; i < 4; i++) g.fillRect(W * (0.12 + i * 0.21), H * 0.7, W * 0.16, 22);
+      people(g, W * 0.17, H * 0.58, 4, r);
+    } else if (kind === 'fest') {
+      var bc = ['#ff6b6b', '#ffd36b', '#6bc6ff', '#7ee08a', '#c9a7ff', '#ff9ec4'];
+      for (i = 0; i < 14; i++) { var bx = r() * W, by = H * 0.1 + r() * H * 0.4; g.strokeStyle = '#7a6a58'; g.lineWidth = 2; g.beginPath(); g.moveTo(bx, by + 40); g.lineTo(bx + 6, by + 120); g.stroke(); g.fillStyle = bc[i % 6]; g.beginPath(); g.ellipse(bx, by, 32, 40, 0, 0, 6.2832); g.fill(); }
+      g.fillStyle = '#8a4b6b'; g.fillRect(W * 0.3, H * 0.55, W * 0.4, H * 0.17); people(g, W * 0.38, H * 0.45, 3, r);
+    } else if (kind === 'books') {
+      g.fillStyle = '#d9b98a'; g.fillRect(0, H * 0.62, W, H * 0.38);
+      var bk = ['#ff8a5c', '#5fa8d3', '#7ee08a', '#ffd36b', '#c9a7ff'];
+      for (i = 0; i < 5; i++) { g.fillStyle = bk[i]; rr(g, W * 0.18, H * 0.62 - (i + 1) * 46, W * 0.3 - i * 12, 42, 6); g.fill(); }
+      g.save(); g.translate(W * 0.68, H * 0.5); g.rotate(-0.5); g.fillStyle = '#ffd36b'; g.fillRect(-140, -14, 260, 28); g.fillStyle = '#ffb0a8'; g.fillRect(120, -14, 30, 28); g.fillStyle = '#f0d0a0'; g.beginPath(); g.moveTo(-140, -14); g.lineTo(-180, 0); g.lineTo(-140, 14); g.fill(); g.restore();
+      for (i = 0; i < 18; i++) { g.fillStyle = ['#e07b39', '#f2b134', '#c8553d'][i % 3]; g.beginPath(); g.ellipse(r() * W, r() * H * 0.6, 14, 8, r() * 3, 0, 6.2832); g.fill(); }
+    } else if (kind === 'snow') {
+      g.fillStyle = '#f4f7ff'; g.fillRect(0, H * 0.68, W, H * 0.32);
+      circle(g, W * 0.72, H * 0.62, 80, '#fff'); circle(g, W * 0.72, H * 0.44, 56, '#fff'); circle(g, W * 0.7, H * 0.42, 6, '#3b2f27'); circle(g, W * 0.75, H * 0.42, 6, '#3b2f27');
+      g.fillStyle = '#ff8a3a'; g.beginPath(); g.moveTo(W * 0.725, H * 0.45); g.lineTo(W * 0.78, H * 0.465); g.lineTo(W * 0.725, H * 0.475); g.fill();
+      g.fillStyle = '#d94a4a'; g.fillRect(W * 0.67, H * 0.5, W * 0.1, 16);
+      g.fillStyle = '#2f7a4a'; for (i = 0; i < 3; i++) { g.beginPath(); g.moveTo(W * 0.22, H * (0.2 + i * 0.12)); g.lineTo(W * (0.12 - i * 0.02), H * (0.36 + i * 0.12)); g.lineTo(W * (0.32 + i * 0.02), H * (0.36 + i * 0.12)); g.fill(); }
+      for (i = 0; i < 70; i++) circle(g, r() * W, r() * H, 3 + r() * 5, 'rgba(255,255,255,.95)');
+      people(g, W * 0.36, H * 0.6, 2, r);
+    }
+  }
+  function photo(m, idx) {
+    var W = 1200, H = 800, c = document.createElement('canvas'); c.width = W; c.height = H;
+    var g = c.getContext('2d'), r = Chalk.rng(idx * 97 + 11), gr = g.createLinearGradient(0, 0, 0, H);
+    gr.addColorStop(0, m[2][0]); gr.addColorStop(1, m[2][1]); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    cloud(g, 120 + r() * 200, 110, 1); cloud(g, 700 + r() * 200, 80, 0.8);
+    scene(g, W, H, m[3], r);
+    g.fillStyle = 'rgba(255,255,255,.88)'; rr(g, 30, H - 120, 420, 90, 22); g.fill();
+    g.fillStyle = '#3b2f27'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.font = '56px "Do Hyeon", sans-serif'; g.fillText(m[0], 56, H - 74);
+    g.font = '36px "Do Hyeon", sans-serif'; g.fillText(m[1], 56 + g.measureText(m[0]).width * 1.55 + 20, H - 72);
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.font = '20px sans-serif'; g.textAlign = 'right'; g.fillText('예시 그림', W - 24, H - 24);
+    return new Promise(function (res) { var im = new Image(); im.onload = function () { res(im); }; im.src = c.toDataURL('image/jpeg', 0.86); });
+  }
+  /* 잔잔한 피아노풍 배경음악: C - G - Am - F 화음을 아르페지오로, 위에 짧은 선율 */
+  function music(sec) {
+    var SR = 22050, N = Math.floor(SR * sec), buf = new Float32Array(N), bpm = 70, beat = 60 / bpm;
+    var prog = [[48, 52, 55, 60, 64], [43, 50, 55, 59, 62], [45, 52, 57, 60, 64], [41, 48, 53, 57, 60]];
+    var mel = [[76, 74, 72, 74], [74, 71, 74, 79], [76, 72, 69, 72], [72, 69, 72, 74]];
+    function f(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+    function note(t, m, amp, dur) {
+      var s0 = Math.floor(t * SR), len = Math.min(N - s0, Math.floor(dur * SR)), fr = f(m), w = 2 * Math.PI * fr / SR;
+      for (var i = 0; i < len; i++) {
+        var e = Math.min(1, i / (SR * 0.006)) * Math.exp(-i / (SR * dur * 0.32));
+        buf[s0 + i] += amp * e * (Math.sin(w * i) + 0.32 * Math.sin(2 * w * i) * Math.exp(-i / (SR * 0.5)) + 0.1 * Math.sin(3 * w * i) * Math.exp(-i / (SR * 0.3)));
+      }
+    }
+    var bar = beat * 4, bars = Math.floor((sec - 6) / bar), b, k;
+    for (b = 0; b < bars; b++) {
+      var ch = prog[b % 4], t0 = 1 + b * bar, fade = Math.min(1, b / 2 + 0.3);
+      note(t0, ch[0] - 12, 0.16 * fade, bar * 1.4);
+      var pat = [1, 2, 3, 4, 3, 2, 1, 2];
+      for (k = 0; k < 8; k++) note(t0 + k * beat / 2, ch[pat[k]], 0.07 * fade, 2.2);
+      if (b >= 4 && b < bars - 2) { var ml = mel[(b + Math.floor(b / 8)) % 4]; for (k = 0; k < 4; k++) if (k !== 3 || b % 2) note(t0 + k * beat, ml[k], 0.1, 2.4); }
+    }
+    var tEnd = 1 + bars * bar; [48, 55, 60, 64, 67, 72].forEach(function (m, i) { note(tEnd + i * 0.12, m, 0.09, 5); });
+    // 메아리
+    var d = Math.floor(SR * 0.36), d2 = Math.floor(SR * 0.53), i;
+    for (i = N - 1; i >= d2; i--) buf[i] += buf[i - d] * 0.28 + buf[i - d2] * 0.16;
+    var peak = 0; for (i = 0; i < N; i++) peak = Math.max(peak, Math.abs(buf[i]));
+    var gain = 0.85 / (peak || 1), out = new DataView(new ArrayBuffer(44 + N * 2));
+    function str(o, s) { for (var j = 0; j < s.length; j++) out.setUint8(o + j, s.charCodeAt(j)); }
+    str(0, 'RIFF'); out.setUint32(4, 36 + N * 2, true); str(8, 'WAVE'); str(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 1, true);
+    out.setUint32(24, SR, true); out.setUint32(28, SR * 2, true); out.setUint16(32, 2, true); out.setUint16(34, 16, true); str(36, 'data'); out.setUint32(40, N * 2, true);
+    for (i = 0; i < N; i++) { var v = Math.max(-1, Math.min(1, buf[i] * gain * Math.min(1, (N - i) / (SR * 2)))); out.setInt16(44 + i * 2, v * 32767, true); }
+    return URL.createObjectURL(new Blob([out], { type: 'audio/wav' }));
+  }
+  function prepare(sec) {
+    if (cache) return Promise.resolve(cache);
+    var fl = document.fonts ? Promise.race([document.fonts.load('40px "Do Hyeon"'), new Promise(function (r) { setTimeout(r, 2000); })]) : Promise.resolve();
+    return fl.then(function () { return Promise.all(MONTHS.map(photo)); }).then(function (ph) {
+      cache = { photos: ph, url: music(sec), dur: sec }; return cache;
+    });
+  }
+  return { prepare: prepare };
+})();
+
 var App = (function () {
   'use strict';
   var KEY = 'last-chalkboard.v1';
@@ -1018,7 +1182,7 @@ var App = (function () {
     var box = $('est'), n = S.students.length, btn = $('startBtn');
     if (S.mode === 'music' && !music) { box.className = 'est warn'; box.innerHTML = '🎵 유튜브 링크를 불러오거나 노래 파일을 골라 주세요. 노래 길이에 맞춰 자동으로 나눠요.'; btn.disabled = true; return; }
     var T = totalT(), p = Show.plan(n, photos.length, T);
-    if (!n) { box.className = 'est warn'; box.innerHTML = '전체 <b>' + fmtMin(T / 60) + '</b> · 아직 학생 코드가 없어요. 먼저 코드를 붙여넣거나 [예시 학생으로 체험하기]를 눌러 보세요.'; btn.disabled = true; return; }
+    if (!n) { box.className = 'est warn'; box.innerHTML = '전체 <b>' + fmtMin(T / 60) + '</b> · 아직 학생 코드가 없어요. 먼저 코드를 붙여넣어 주세요. 전체 흐름은 맨 위 [예시로 체험하기]로 미리 볼 수 있어요.'; btn.disabled = true; return; }
     var html = '전체 <b>' + fmtMin(T / 60) + '</b>' + (S.mode === 'music' ? ' (노래 길이)' : '') + ' = ';
     html += (photos.length ? '사진 ' + photos.length + '장 <b>' + Math.round(p.ph) + '초</b>(한 장에 ' + p.perPh.toFixed(1) + '초) → ' : '') +
       '학생 ' + n + '명 칠판 채우기 <b>' + Math.round(p.cells) + '초</b>(한 명에 <b>' + p.per.toFixed(1) + '초</b>) → 불 끄고 인사 <b>' + Math.round(p.end) + '초</b>';
@@ -1067,10 +1231,17 @@ var App = (function () {
     $('paste').addEventListener('paste', function () { var ta = this; setTimeout(function () { ingest(ta.value); ta.value = ''; }, 0); });
     $('paste').addEventListener('change', function () { if (this.value.trim()) { ingest(this.value); this.value = ''; } });
     $('shuffle').onclick = function () { for (var i = S.students.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = S.students[i]; S.students[i] = S.students[j]; S.students[j] = x; } save(); renderStudents(); };
-    $('sample').onclick = function () {
-      if (S.students.length && !window.confirm('지금 학생 목록 대신 예시 학생 24명을 넣을까요?')) return;
-      S.students = Sample.make(24); save(); renderStudents(); est();
-      $('pasteRes').innerHTML = '<div class="res ok">✨ 예시 학생 24명을 넣었어요. 아래 [칠판 상영 시작]을 눌러 보세요. 진짜 응답을 받으면 [모두 지우기] 뒤에 붙여넣으면 돼요.</div>';
+    // 예시로 체험하기: 내 목록은 그대로 두고, 예시 학생·사진·음악을 만들어 바로 상영
+    $('demoBtn').onclick = function () {
+      var b = this; b.disabled = true; b.textContent = '준비 중…';
+      setTimeout(function () {
+        Demo.prepare(150).then(function (d) {
+          b.disabled = false; b.textContent = '▶ 예시로 체험하기';
+          Show.start({ students: Sample.make(16), photos: d.photos, title: '우리 반 추억 칠판', phTitle: '우리의 한 해',
+            close1: '추억고등학교 2학년 3반, 안녕!', close2: '1년 동안 정말 고마웠어', mode: 'music', T: d.dur,
+            music: { kind: 'file', url: d.url }, vol: 0.7 });
+        }, function () { b.disabled = false; b.textContent = '▶ 예시로 체험하기'; window.alert('예시를 만들지 못했어요. 크롬이나 엣지에서 다시 열어 주세요.'); });
+      }, 30);
     };
     $('clearStu').onclick = function () { if (!S.students.length || !window.confirm('학생 ' + S.students.length + '명의 그림과 글을 이 컴퓨터에서 모두 지울까요?')) return; S.students = []; save(); renderStudents(); est(); $('pasteRes').innerHTML = ''; };
     $('phFile').onchange = function () { addPhotos(this.files); this.value = ''; };
@@ -1098,7 +1269,8 @@ var App = (function () {
     est();
   }
   init();
-  return { ingest: ingest, state: function () { return S; }, est: est };
+  return { ingest: ingest, state: function () { return S; }, est: est,
+    _sample: function (n) { S.students = Sample.make(n || 24); save(); renderStudents(); est(); } };
 })();
 </script>
 </body>
