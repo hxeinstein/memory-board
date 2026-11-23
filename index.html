@@ -110,13 +110,15 @@ details summary{cursor:pointer;font-weight:700}
     <div class="link"><input class="inp" id="drawUrl" placeholder="학생용 그림판 주소"><button class="btn y" id="copyUrl">주소 복사</button></div>
     <p class="hint" id="urlHint"></p>
     <details class="formbox" id="formBox">
-      <summary>📮 구글 설문으로 바로 받기 (선택 · 처음 한 번만 설정)</summary>
+      <summary>📮 구글 설문으로 바로 받기 (선택 · 처음 한 번만 5분)</summary>
       <p class="hint">설정하면 학생은 카톡 대신 <b>[선생님께 보내기]</b> 버튼 한 번으로 제출해요. 학생은 설문지를 따로 보지 않아요.</p>
+      <div class="row" style="margin:6px 0 4px"><a class="btn y" id="copyForm" href="https://docs.google.com/forms/d/1PUWvNz3KLV_svQzcUvpLUQeFMbKeCU4x8QePIXDG-ic/copy" target="_blank" rel="noopener" style="text-decoration:none">📄 설문지 사본 만들기</a><span class="hint" style="margin:0">구글 계정으로 로그인한 뒤 [사본 만들기]를 누르면 내 드라이브에 설문이 생겨요.</span></div>
       <ol class="hint steps">
-        <li>구글 설문을 새로 만들고, 질문을 <b>1개</b>만 둬요. 유형은 <b>장문형</b>, 제목은 아무거나(예: 칠판 코드).</li>
-        <li><b>설정</b>에서 '이메일 주소 수집' 끄기, '응답 횟수 1회로 제한' 끄기 (로그인 없이 낼 수 있어야 해요).</li>
-        <li>오른쪽 위 <b>⋮ → 미리 채워진 링크 가져오기</b> → 칸에 아무 글자(예: test) → <b>링크 받기 → 링크 복사</b></li>
-        <li>복사한 링크를 아래에 붙여넣으면, 우리 반 전용 그림판 주소가 만들어져요.</li>
+        <li>위 <b>[설문지 사본 만들기]</b>를 눌러 내 설문을 만들어요. 질문(칠판 코드, 장문형)은 이미 들어 있어요.</li>
+        <li><b>[응답] 탭 → [Sheets에 연결]</b>을 눌러 응답 시트를 만들어요. 사본에는 응답 시트가 따로 없어서 꼭 해야 해요.</li>
+        <li><b>[설정] → 응답</b>에서 '이메일 주소 수집'은 <b>수집하지 않음</b>, '응답 횟수 1회로 제한'은 <b>끔</b>인지 확인해요.</li>
+        <li>오른쪽 위 <b>[게시]</b>(종이비행기 모양)를 눌러요. 학교 계정이면 응답자를 '링크가 있는 모든 사용자'로 두세요. 학교 사용자로 제한하면 학생 휴대폰에서 자동 보내기가 막혀요.</li>
+        <li>오른쪽 위 <b>⋮ → 미리 채워진 링크 가져오기</b> → 칸에 아무 글자(예: test) → <b>링크 받기 → 링크 복사</b>를 하고, 아래에 붙여넣으면 우리 반 전용 그림판 주소가 만들어져요.</li>
       </ol>
       <input class="inp" id="formLink" placeholder="미리 채워진 링크 붙여넣기 (https://docs.google.com/forms/d/e/.../viewform?...entry.123...)">
       <div id="formRes"></div>
