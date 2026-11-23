@@ -64,7 +64,11 @@ textarea.t{resize:none;height:84px;line-height:1.5}
 #code{height:110px;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:10px}
 .copy{margin-top:10px;background:#2f5546}
 .ok{background:#e4f5e8;border:2px solid #2f8a4e;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:15px;line-height:1.6}
-.go{display:none;margin-top:10px;background:#5b7fe0}
+.go{display:none;margin-left:6px}
+.send{margin-top:12px;background:#2f8a4e}.share{margin-top:12px;background:#f7c948;color:#3b2f27}
+.send:disabled{opacity:.6}
+.ok.wait{background:#fff6d6;border-color:#d9a400}.ok.bad{background:#ffe3dc;border-color:#c0392b}
+.raw{margin-top:12px;font-size:14px;color:#6a5a48}.raw summary{cursor:pointer;font-weight:700}.raw .tool{margin-top:8px}
 .foot{text-align:center;font-size:11px;color:#a8977f;margin-top:18px}
 </style>
 </head>
@@ -107,13 +111,17 @@ textarea.t{resize:none;height:84px;line-height:1.5}
   <div class="card" id="done">
     <h2>🎉 완성했어요!</h2>
     <div class="prev"><canvas id="mini"></canvas><div class="m" id="pm"></div></div>
-    <textarea class="t" id="code" readonly></textarea>
-    <button class="big copy" id="copy">📋 코드 복사하기</button>
-    <div class="ok" id="okmsg">복사한 코드를 <b>선생님이 알려 준 곳</b>(설문지나 단톡방)에 붙여넣으면 끝이에요.<br>고치고 싶으면 다시 그리고 새 코드를 내면 돼요. 같은 이름은 마지막 것만 쓰여요.</div>
-    <button class="big go" id="go">📝 설문지로 가기</button>
+    <button class="big send" id="send">📮 선생님께 보내기</button>
+    <button class="big share" id="share">📤 카톡으로 선생님께 보내기</button>
+    <div class="ok" id="okmsg"></div>
+    <details class="raw"><summary>코드 직접 복사하기</summary>
+      <textarea class="t" id="code" readonly></textarea>
+      <button class="tool" id="copy">📋 코드 복사</button>
+      <button class="tool go" id="go">📝 설문지로 가기</button>
+    </details>
   </div></div>
   </div>
-  <div class="foot">우리 반 추억 칠판 · 투머치쌤 · Instagram @too.much.science<br>그림과 글은 이 휴대폰에만 있다가, 내가 코드를 붙여넣을 때만 전달돼요.</div>
+  <div class="foot">우리 반 추억 칠판 · 투머치쌤 · Instagram @too.much.science<br>그림과 글은 이 휴대폰에만 있다가, 내가 [보내기]를 누를 때만 선생님께 전달돼요.</div>
 </div>
 
 <script>
@@ -487,7 +495,7 @@ var Chalk = (function () {
     var code = await ChalkCode.encode({ name: name, msg: msg, strokes: state.strokes });
     var back = await ChalkCode.decode(code);
     if (!back.ok) { err.textContent = '코드를 만들지 못했어요. 크롬이나 사파리 최신 버전으로 열어 주세요.'; return; }
-    $('code').value = code;
+    $('code').value = code; lastName = back.data.name; sendMode();
     var mini = $('mini'), m = mini.getContext('2d'), d2 = Math.min(window.devicePixelRatio || 1, 3);
     mini.width = mini.height = Math.round(120 * d2); m.setTransform(mini.width / GRID, 0, 0, mini.width / GRID, 0, 0);
     m.drawImage(boardTex, 0, 0, GRID, GRID); Chalk.drawStrokes(m, back.data.strokes, 0, 0, GRID, 1);
@@ -495,9 +503,43 @@ var Chalk = (function () {
     $('pm').appendChild(document.createElement('br')); $('pm').appendChild(document.createTextNode(back.data.msg));
     $('done').classList.add('on'); $('done').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  /* 보내기: ① 선생님이 설문을 연결한 주소(?f=설문ID&e=질문번호)면 버튼 한 번으로 설문에 제출
+              ② 아니면 휴대폰 공유창(카톡 등)으로 선생님께 보내기 */
+  var lastName = '', FORM = null;
+  try {
+    var qs = new URLSearchParams(location.search), ff = qs.get('f'), ee = qs.get('e');
+    if (ff && /^[A-Za-z0-9_-]{20,}$/.test(ff) && ee && /^\d+$/.test(ee)) FORM = { f: ff, e: ee };
+  } catch (e) { }
+  function say(cls, html) { var o = $('okmsg'); o.className = 'ok' + (cls ? ' ' + cls : ''); o.innerHTML = html; }
+  function sendMode() {
+    $('send').style.display = FORM ? 'block' : 'none';
+    $('share').style.display = FORM ? 'none' : 'block';
+    say('', FORM ? '아래 <b>선생님께 보내기</b>를 누르면 끝이에요. 고치고 싶으면 다시 그리고 또 보내면 돼요. 같은 이름은 마지막 것만 쓰여요.'
+      : '<b>카톡으로 선생님께 보내기</b>를 누르고, 선생님이 알려 준 대화방(반 단톡방이나 선생님)을 고르면 끝이에요. 다시 보내면 마지막 것만 쓰여요.');
+  }
+  $('send').onclick = async function () {
+    var b = this; b.disabled = true; b.textContent = '보내는 중…'; say('wait', '선생님께 보내고 있어요…');
+    try {
+      var body = new URLSearchParams(); body.append('entry.' + FORM.e, $('code').value);
+      await fetch('https://docs.google.com/forms/d/e/' + FORM.f + '/formResponse', { method: 'POST', mode: 'no-cors', body: body });
+      b.textContent = '✅ 보냈어요!'; say('', '🎉 선생님께 보냈어요! 이제 창을 닫아도 돼요.<br>고치고 싶으면 다시 그리고 또 보내면 마지막 것으로 바뀌어요.');
+    } catch (e) {
+      b.textContent = '📮 다시 보내기'; say('bad', '보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. 계속 안 되면 아래 <b>코드 직접 복사하기</b>로 복사해서 선생님께 보내 주세요.');
+    }
+    b.disabled = false;
+  };
+  $('share').onclick = async function () {
+    var text = '[우리 반 추억 칠판] ' + lastName + '\n' + $('code').value;
+    if (navigator.share) {
+      try { await navigator.share({ text: text }); say('', '보냈다면 끝이에요! 🎉 고치고 싶으면 다시 그리고 또 보내면 돼요.'); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(text); } catch (e) { $('code').select(); document.execCommand('copy'); }
+    say('', '📋 복사했어요! 카톡을 열어 선생님이 알려 준 대화방에 <b>붙여넣기</b>해서 보내 주세요.');
+  };
   $('copy').onclick = function () {
     var t = $('code'), btn = this;
-    function ok() { btn.textContent = '✅ 복사했어요!'; setTimeout(function () { btn.textContent = '📋 코드 복사하기'; }, 2000); if (form) $('go').style.display = 'block'; }
+    function ok() { btn.textContent = '✅ 복사했어요!'; setTimeout(function () { btn.textContent = '📋 코드 복사'; }, 2000); if (form) $('go').style.display = 'inline-block'; }
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(ok, function () { t.select(); document.execCommand('copy'); ok(); });
     else { t.select(); document.execCommand('copy'); ok(); }
   };

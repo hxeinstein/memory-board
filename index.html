@@ -42,6 +42,10 @@ textarea.inp{resize:vertical;line-height:1.5}
 .link{display:flex;gap:8px;align-items:center}
 .link input{flex:1;font-family:ui-monospace,Consolas,monospace;font-size:14px}
 .paste{min-height:110px;font-size:13px;font-family:ui-monospace,Consolas,monospace}
+.formbox{margin-top:10px;border:2px dashed #cdbb9c;border-radius:12px;padding:10px 12px;background:#fff}
+.formbox summary{cursor:pointer;font-weight:700;font-size:15px}
+.steps{padding-left:22px;margin:6px 0}.steps li{margin:2px 0}
+.classlink{display:flex;gap:8px;margin-top:8px}.classlink input{flex:1;font-family:ui-monospace,Consolas,monospace;font-size:13px}
 .res{border-radius:12px;padding:10px 14px;margin-top:10px;font-weight:700;line-height:1.7;font-size:15px}
 .res.ok{background:#e4f5e8;border:2px solid #2f8a4e}.res.bad{background:#ffe3dc;border:2px solid #c0392b}
 .stus{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-top:12px;max-height:390px;overflow-y:auto;padding:2px 4px 2px 0}
@@ -102,14 +106,28 @@ details summary{cursor:pointer;font-weight:700}
 
   <div class="card">
     <h2><span class="n">1</span>학생에게 그림판 주소 보내기</h2>
-    <p class="hint">학생은 휴대폰으로 그림판을 열어 <b>이름 · 분필 그림 · 한마디</b>를 적고, 나온 <b>코드</b>를 복사해서 선생님께 보내요.<br>코드는 구글 설문(장문형 문항), 단톡방, 클래스룸 댓글 어디로 받아도 돼요.</p>
+    <p class="hint">학생은 휴대폰으로 그림판을 열어 <b>이름 · 분필 그림 · 한마디</b>를 쓰고, 완성 후 <b>[카톡으로 선생님께 보내기]</b>를 누르면 돼요. 반 단톡방이나 선생님께 보내게 안내해 주세요.</p>
     <div class="link"><input class="inp" id="drawUrl" placeholder="학생용 그림판 주소"><button class="btn y" id="copyUrl">주소 복사</button></div>
     <p class="hint" id="urlHint"></p>
+    <details class="formbox" id="formBox">
+      <summary>📮 구글 설문으로 바로 받기 (선택 · 처음 한 번만 설정)</summary>
+      <p class="hint">설정하면 학생은 카톡 대신 <b>[선생님께 보내기]</b> 버튼 한 번으로 제출해요. 학생은 설문지를 따로 보지 않아요.</p>
+      <ol class="hint steps">
+        <li>구글 설문을 새로 만들고, 질문을 <b>1개</b>만 둬요. 유형은 <b>장문형</b>, 제목은 아무거나(예: 칠판 코드).</li>
+        <li><b>설정</b>에서 '이메일 주소 수집' 끄기, '응답 횟수 1회로 제한' 끄기 (로그인 없이 낼 수 있어야 해요).</li>
+        <li>오른쪽 위 <b>⋮ → 미리 채워진 링크 가져오기</b> → 칸에 아무 글자(예: test) → <b>링크 받기 → 링크 복사</b></li>
+        <li>복사한 링크를 아래에 붙여넣으면, 우리 반 전용 그림판 주소가 만들어져요.</li>
+      </ol>
+      <input class="inp" id="formLink" placeholder="미리 채워진 링크 붙여넣기 (https://docs.google.com/forms/d/e/.../viewform?...entry.123...)">
+      <div id="formRes"></div>
+    </details>
   </div>
 
   <div class="card">
     <h2><span class="n">2</span>학생 코드 붙여넣기 <span class="cnt" id="stuCnt"></span></h2>
-    <p class="hint">설문 응답 시트를 통째로(<kbd>Ctrl</kbd>+<kbd>A</kbd> → <kbd>Ctrl</kbd>+<kbd>C</kbd>) 복사하거나, 단톡방 대화를 복사해서 아래에 붙여넣으세요. 글 속에서 코드만 알아서 찾아요. 나중에 받은 코드도 계속 붙여넣으면 더해지고, 같은 이름은 마지막 코드로 바뀌어요.</p>
+    <p class="hint"><b>카톡으로 받았다면</b>: PC 카톡 대화방 → ≡ 메뉴 → <b>대화 내용 → 대화 내보내기</b>로 받은 .txt 파일을 아래 [카톡 대화 파일 불러오기]로 열거나, 메시지를 복사해서 붙여넣으세요.<br>
+    <b>설문으로 받았다면</b>: 응답 시트를 통째로(<kbd>Ctrl</kbd>+<kbd>A</kbd> → <kbd>Ctrl</kbd>+<kbd>C</kbd>) 복사해서 붙여넣으세요.<br>글 속에서 코드만 알아서 찾아요. 나중에 받은 것도 계속 넣으면 더해지고, 같은 이름은 마지막 것으로 바뀌어요.</p>
+    <div class="row" style="margin-bottom:8px"><label class="btn ghost" style="cursor:pointer">💬 카톡 대화 파일(.txt) 불러오기<input type="file" id="chatFile" accept=".txt,text/plain" style="display:none"></label></div>
     <textarea class="inp paste" id="paste" placeholder="여기를 누르고 Ctrl+V"></textarea>
     <div id="pasteRes"></div>
     <div class="row" style="margin-top:10px">
@@ -1082,7 +1100,7 @@ var App = (function () {
   var KEY = 'last-chalkboard.v1';
   var S, photos = [], music = null, fileUrl = null, saveT = 0;
   function $(id) { return document.getElementById(id); }
-  function fresh() { return { students: [], title: '', phTitle: '', close1: '', close2: '', mode: 'fixed', minutes: 4, drawUrl: '', ytUrl: '' }; }
+  function fresh() { return { students: [], title: '', phTitle: '', close1: '', close2: '', mode: 'fixed', minutes: 4, drawUrl: '', ytUrl: '', formLink: '' }; }
   function load() { try { S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY)) || {}); } catch (e) { S = fresh(); } if (!Array.isArray(S.students)) S.students = []; }
   function save() { clearTimeout(saveT); saveT = setTimeout(function () { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }, 200); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -1093,8 +1111,25 @@ var App = (function () {
     if (/^https?:/.test(location.protocol)) auto = new URL('chalk-draw.html', location.href).href;
     $('drawUrl').value = S.drawUrl || auto;
     $('drawUrl').oninput = function () { S.drawUrl = this.value.trim(); save(); };
-    $('urlHint').innerHTML = auto ? '이 주소를 학생에게 보내면 돼요. 주소 뒤에 <b>?form=내 설문지 주소</b>를 붙이면, 학생이 코드를 복사한 뒤 설문지로 바로 가는 버튼이 생겨요.'
+    $('urlHint').innerHTML = auto ? '이 주소를 학생에게 보내면 돼요. 구글 설문을 연결하면 아래에 우리 반 전용 주소가 따로 만들어져요.'
       : '지금은 컴퓨터에 저장된 파일로 열었어요. 학생용 그림판(chalk-draw.html)을 올려 둔 인터넷 주소를 여기에 적어 두면 편해요.';
+    // 구글 설문 연결: 미리 채워진 링크에서 설문 ID와 질문 번호를 꺼냄
+    function formRes() {
+      var v = (S.formLink || '').trim(), box = $('formRes'), m1 = /forms\/d\/e\/([A-Za-z0-9_-]{20,})\//.exec(v), m2 = /entry\.(\d+)=/.exec(v);
+      if (!v) { box.innerHTML = ''; return; }
+      if (!m1 || !m2) { box.innerHTML = '<div class="res bad">⚠️ 미리 채워진 링크가 아니에요. 3번 단계에서 받은 링크(…/viewform?…entry.숫자=…)를 붙여넣어 주세요.</div>'; return; }
+      var base = ($('drawUrl').value || '').trim() || 'chalk-draw.html', url;
+      try { url = new URL(base, location.href); } catch (e) { url = null; }
+      if (!url) { box.innerHTML = '<div class="res bad">⚠️ 위의 학생용 그림판 주소를 먼저 적어 주세요.</div>'; return; }
+      url.search = ''; url.searchParams.set('f', m1[1]); url.searchParams.set('e', m2[1]);
+      box.innerHTML = '<div class="res ok">✅ 설문 연결 완료! 학생에게는 이 <b>우리 반 전용 주소</b>를 보내 주세요.<div class="classlink"><input class="inp" id="classUrl" readonly><button class="btn y" id="copyClass">주소 복사</button></div></div>';
+      $('classUrl').value = url.href;
+      $('copyClass').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(url.href) : Promise.reject()).then(function () { b.textContent = '복사했어요 ✓'; setTimeout(function () { b.textContent = '주소 복사'; }, 1800); }, function () { $('classUrl').select(); document.execCommand('copy'); }); };
+    }
+    $('formLink').value = S.formLink || ''; if (S.formLink) $('formBox').open = true;
+    $('formLink').oninput = function () { S.formLink = this.value.trim(); save(); formRes(); };
+    $('drawUrl').addEventListener('input', formRes);
+    formRes();
     $('copyUrl').onclick = function () {
       var v = $('drawUrl').value, b = this; if (!v) return;
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function () { b.textContent = '복사했어요 ✓'; setTimeout(function () { b.textContent = '주소 복사'; }, 1800); },
@@ -1228,6 +1263,7 @@ var App = (function () {
 
   function init() {
     load(); initUrl(); renderStudents();
+    $('chatFile').onchange = function () { var f = this.files && this.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { ingest(String(r.result)); }; r.readAsText(f, 'utf-8'); this.value = ''; };
     $('paste').addEventListener('paste', function () { var ta = this; setTimeout(function () { ingest(ta.value); ta.value = ''; }, 0); });
     $('paste').addEventListener('change', function () { if (this.value.trim()) { ingest(this.value); this.value = ''; } });
     $('shuffle').onclick = function () { for (var i = S.students.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = S.students[i]; S.students[i] = S.students[j]; S.students[j] = x; } save(); renderStudents(); };
