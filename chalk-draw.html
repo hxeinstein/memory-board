@@ -369,7 +369,7 @@ var Chalk = (function () {
   function updateUI() {
     var u = used(), left = Math.max(0, 1 - u / ChalkCode.MAX_PTS), gg = $('gauge');
     gg.firstChild.style.width = (left * 100) + '%'; gg.classList.toggle('low', left < 0.2);
-    $('gl').textContent = erasing ? '🧽 지우개: 지울 선을 톡 누르거나 문질러요. 색을 누르면 다시 그려요.'
+    $('gl').textContent = erasing ? '지우개: 지울 선을 톡 누르거나 문질러요. 색을 누르면 다시 그려요.'
       : left <= 0 ? '분필을 다 썼어요! 지우개나 되돌리기로 조금 지우면 더 그릴 수 있어요.' : '분필 남은 양';
     $('gl').classList.toggle('er-on', erasing);
     $('undo').disabled = !hist.length && !state.strokes.length; $('clear').disabled = !state.strokes.length;
@@ -455,7 +455,7 @@ var Chalk = (function () {
     var b = document.createElement('button'); b.className = 'col'; b.style.background = c; b.title = CHALK_COLOR_NAMES[i];
     b.onclick = function () { state.c = i; erasing = false; save(); tools(); }; $('cols').appendChild(b);
   });
-  var erB = document.createElement('button'); erB.className = 'er'; erB.id = 'eraser'; erB.textContent = '🧽'; erB.title = '지우개 (한 번에 그은 선을 통째로 지워요)';
+  var erB = document.createElement('button'); erB.className = 'er'; erB.id = 'eraser'; erB.innerHTML = '<svg viewBox="0 0 40 28" width="36" height="25" aria-hidden="true" style="display:block;margin:auto"><g transform="rotate(-24 20 14)" stroke="#3b2f27" stroke-width="2.4" stroke-linejoin="round"><path d="M5 9.5a4.5 4.5 0 0 1 4.5-4.5H16v14H9.5A4.5 4.5 0 0 1 5 14.5z" fill="#fff4f6"/><path d="M15 5h20v14H15z" fill="#7cc6ee"/><path d="M15 5v14" fill="none"/><path d="M19 12h12" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/><path d="M8.5 8.5v3" stroke="#f3a6b8" stroke-width="2" stroke-linecap="round"/></g></svg>'; erB.title = '지우개 (한 번에 그은 선을 통째로 지워요)';
   erB.onclick = function () { erasing = !erasing; tools(); }; $('cols').appendChild(erB);
   [8, 13, 20].forEach(function (px, i) {
     var b = document.createElement('button'); b.className = 'wid'; b.title = ['가늘게', '보통', '굵게'][i];
