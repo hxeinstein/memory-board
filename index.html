@@ -118,9 +118,9 @@ details summary{cursor:pointer;font-weight:700}
         <li><b>[응답] 탭 → [Sheets에 연결]</b>을 눌러 응답 시트를 만들어요. 사본에는 응답 시트가 따로 없어서 꼭 해야 해요.</li>
         <li><b>[설정] → 응답</b>에서 '이메일 주소 수집'은 <b>수집하지 않음</b>, '응답 횟수 1회로 제한'은 <b>끔</b>인지 확인해요.</li>
         <li>오른쪽 위 <b>[게시]</b>(종이비행기 모양)를 눌러요. 학교 계정이면 응답자를 '링크가 있는 모든 사용자'로 두세요. 학교 사용자로 제한하면 학생 휴대폰에서 자동 보내기가 막혀요.</li>
-        <li>오른쪽 위 <b>⋮ → 미리 채워진 링크 가져오기</b> → 칸에 아무 글자(예: test) → <b>링크 받기 → 링크 복사</b>를 하고, 아래에 붙여넣으면 우리 반 전용 그림판 주소가 만들어져요.</li>
+        <li>오른쪽 위 <b>⋮ → 양식 미리 작성</b> → 칸에 아무 글자(예: test) → <b>링크 받기 → 링크 복사</b>를 하고, 아래에 붙여넣으면 우리 반 전용 그림판 주소가 만들어져요.</li>
       </ol>
-      <input class="inp" id="formLink" placeholder="미리 채워진 링크 붙여넣기 (https://docs.google.com/forms/d/e/.../viewform?...entry.123...)">
+      <input class="inp" id="formLink" placeholder="양식 미리 작성에서 복사한 링크 붙여넣기 (https://docs.google.com/forms/d/e/.../viewform?...entry.123...)">
       <div id="formRes"></div>
     </details>
   </div>
@@ -1125,11 +1125,11 @@ var App = (function () {
     $('drawUrl').oninput = function () { S.drawUrl = this.value.trim(); save(); };
     $('urlHint').innerHTML = auto ? '이 주소를 학생에게 보내면 돼요. 구글 설문을 연결하면 아래에 우리 반 전용 주소가 따로 만들어져요.'
       : '지금은 컴퓨터에 저장된 파일로 열었어요. 학생용 그림판(chalk-draw.html)을 올려 둔 인터넷 주소를 여기에 적어 두면 편해요.';
-    // 구글 설문 연결: 미리 채워진 링크에서 설문 ID와 질문 번호를 꺼냄
+    // 구글 설문 연결: 양식 미리 작성 링크에서 설문 ID와 질문 번호를 꺼냄
     function formRes() {
       var v = (S.formLink || '').trim(), box = $('formRes'), m1 = /forms\/d\/e\/([A-Za-z0-9_-]{20,})\//.exec(v), m2 = /entry\.(\d+)=/.exec(v);
       if (!v) { box.innerHTML = ''; return; }
-      if (!m1 || !m2) { box.innerHTML = '<div class="res bad">⚠️ 미리 채워진 링크가 아니에요. 3번 단계에서 받은 링크(…/viewform?…entry.숫자=…)를 붙여넣어 주세요.</div>'; return; }
+      if (!m1 || !m2) { box.innerHTML = '<div class="res bad">⚠️ 양식 미리 작성에서 받은 링크가 아니에요. 5번 단계에서 복사한 링크(…/viewform?…entry.숫자=…)를 붙여넣어 주세요.</div>'; return; }
       var base = ($('drawUrl').value || '').trim() || 'chalk-draw.html', url;
       try { url = new URL(base, location.href); } catch (e) { url = null; }
       if (!url) { box.innerHTML = '<div class="res bad">⚠️ 위의 학생용 그림판 주소를 먼저 적어 주세요.</div>'; return; }
