@@ -172,9 +172,22 @@ details summary{cursor:pointer;font-weight:700}
     <div class="est" id="est"></div>
   </div>
 
+  <div class="card move">
+    <h2><span class="n">📦</span>다른 컴퓨터로 옮기기 · 정리하기</h2>
+    <p class="hint">여기서 준비한 것(학생 그림·글·사진·음악 파일·설정)을 <b>파일 하나</b>로 저장해서 교실 컴퓨터에서 그대로 불러올 수 있어요. USB나 메일로 옮기면 돼요.</p>
+    <div class="row">
+      <button class="btn y" id="exportBtn">💾 준비한 것 파일로 저장</button>
+      <label class="btn" style="cursor:pointer">📂 저장한 파일 불러오기<input type="file" id="importFile" accept=".json,application/json" style="display:none"></label>
+      <span style="flex:1"></span>
+      <button class="btn ghost" id="wipeAll">🧹 이 컴퓨터에서 모두 지우기</button>
+    </div>
+    <p class="hint" id="moveRes"></p>
+    <p class="hint" style="margin-bottom:0">교실 컴퓨터처럼 <b>여러 선생님이 같이 쓰는 컴퓨터</b>라면, 상영이 끝난 뒤 [🧹 이 컴퓨터에서 모두 지우기]를 꼭 눌러 주세요. 다음 사람에게 우리 반 학생 그림이 보이지 않아요.</p>
+  </div>
+
   <button class="start" id="startBtn">▶ 칠판 상영 시작</button>
   <div class="keys"><kbd>스페이스</kbd> 멈춤/재생 · <kbd>←</kbd><kbd>→</kbd> 10초 뒤로/앞으로 · <kbd>F</kbd> 전체 화면 · <kbd>Esc</kbd> 나가기 · 끝나면 <b>칠판 그림 저장</b></div>
-  <div class="foot">우리 반 추억 칠판 · 과하개쌤 · Instagram @too.much.science<br>학생 이름과 글은 이 브라우저에만 저장되고 어디로도 보내지 않아요. 학년이 끝나면 [모두 지우기]로 지워 주세요.</div>
+  <div class="foot">우리 반 추억 칠판 · 과하개쌤 · Instagram @too.much.science<br>학생 이름과 글은 이 브라우저에만 저장되고 어디로도 보내지 않아요. 다 쓰면 [🧹 이 컴퓨터에서 모두 지우기]로 지워 주세요.</div>
 </div>
 
 <div id="show">
@@ -1262,6 +1275,55 @@ var App = (function () {
   }
   function fmtMin(m) { var a = Math.floor(m), s = Math.round((m - a) * 60); if (s === 60) { a++; s = 0; } return (a ? a + '분' : '') + (s ? (a ? ' ' : '') + s + '초' : (a ? '' : '0초')); }
 
+  /* ---------- 파일로 저장·불러오기, 모두 지우기 ---------- */
+  function moveMsg(t, bad) { var el = $('moveRes'); el.innerHTML = t; el.style.color = bad ? '#c0392b' : '#2f7a4a'; el.style.fontWeight = 700; }
+  function photoData(img) {
+    var w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, 1600 / Math.max(w, h)), c = document.createElement('canvas');
+    c.width = Math.round(w * k); c.height = Math.round(h * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.85);
+  }
+  function blobToData(b) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = rej; r.readAsDataURL(b); }); }
+  async function exportAll() {
+    var b = $('exportBtn'); b.disabled = true; b.textContent = '저장 준비 중…';
+    try {
+      var out = { app: 'memory-board', v: 1, saved: new Date().toISOString(), state: S, photos: [], music: null };
+      for (var i = 0; i < photos.length; i++) { var im = photos[i].img; if (!im.complete) await new Promise(function (r) { im.onload = im.onerror = r; }); if (im.naturalWidth) out.photos.push({ name: photos[i].name, data: photoData(im) }); }
+      if (music && music.kind === 'file') { var blob = await (await fetch(music.url)).blob(); out.music = { name: music.name, dur: music.dur, data: await blobToData(blob) }; }
+      var d = new Date(), stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+      var url = URL.createObjectURL(new Blob([JSON.stringify(out)], { type: 'application/json' })), a = document.createElement('a');
+      a.href = url; a.download = '추억칠판_준비파일_' + stamp + '.json'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      moveMsg('✅ 저장했어요. 다운로드 폴더의 <b>추억칠판_준비파일_' + stamp + '.json</b>을 교실 컴퓨터로 옮긴 뒤 [📂 저장한 파일 불러오기]를 누르세요.' + (music && music.kind === 'yt' ? ' (유튜브 음악은 링크로 함께 저장돼요.)' : ''));
+    } catch (e) { moveMsg('⚠️ 저장하지 못했어요. 다시 눌러 주세요.', true); }
+    b.disabled = false; b.textContent = '💾 준비한 것 파일로 저장';
+  }
+  async function importAll(f) {
+    try {
+      var o = JSON.parse(await f.text());
+      if (!o || o.app !== 'memory-board' || !o.state) throw 0;
+      if ((S.students.length || photos.length) && !window.confirm('지금 이 컴퓨터에 있는 학생 ' + S.students.length + '명과 사진 ' + photos.length + '장을 불러온 파일 내용으로 바꿀까요?')) return;
+      S = Object.assign(fresh(), o.state); if (!Array.isArray(S.students)) S.students = []; save();
+      photos.forEach(function (p) { if (/^blob:/.test(p.url)) URL.revokeObjectURL(p.url); }); photos = [];
+      (o.photos || []).forEach(function (p) { var img = new Image(); img.src = p.data; photos.push({ name: p.name, url: p.data, img: img }); });
+      ['title', 'phTitle', 'close1', 'close2'].forEach(function (k) { $(k).value = S[k] || ''; });
+      $('minutes').value = S.minutes; $('drawUrl').value = S.drawUrl || $('drawUrl').value;
+      $('formLink').value = S.formLink || ''; if (S.formLink) $('formBox').open = true; $('formLink').dispatchEvent(new Event('input'));
+      $('ytUrl').value = S.ytUrl || '';
+      if (o.music && o.music.data) {
+        if (fileUrl) URL.revokeObjectURL(fileUrl);
+        fileUrl = URL.createObjectURL(await (await fetch(o.music.data)).blob());
+        setMusic({ kind: 'file', url: fileUrl, dur: o.music.dur, name: o.music.name });
+      } else if (S.ytUrl) loadYT(S.ytUrl, true); else setMusic(null);
+      renderStudents(); renderPhotos(); est();
+      moveMsg('✅ 불러왔어요! 학생 ' + S.students.length + '명 · 사진 ' + photos.length + '장' + (o.music ? ' · 음악 파일' : S.ytUrl ? ' · 유튜브 음악' : '') + '. 바로 상영할 수 있어요.');
+    } catch (e) { moveMsg('⚠️ 추억 칠판에서 저장한 파일이 아니에요. [💾 준비한 것 파일로 저장]으로 만든 .json 파일을 골라 주세요.', true); }
+  }
+  function wipeAll() {
+    if (!window.confirm('이 컴퓨터에 있는 학생 그림·글, 사진, 음악, 칠판 글, 설문 링크를 모두 지울까요?\n(저장해 둔 .json 파일과 구글 설문 응답은 지워지지 않아요.)')) return;
+    try { localStorage.removeItem(KEY); } catch (e) { }
+    location.reload();
+  }
+
   /* ---------- 시작 ---------- */
   function start() {
     if (!S.students.length) return;
@@ -1313,11 +1375,14 @@ var App = (function () {
     $('ytHint').textContent = /^https?:/.test(location.protocol) ? '유튜브는 인터넷이 연결돼 있어야 해요. 광고가 먼저 나오면 광고가 끝난 뒤 칠판이 시작돼요. 퍼가기가 막힌 영상은 쓸 수 없어요.'
       : '⚠️ 지금은 컴퓨터에 저장된 파일로 열어서 유튜브가 재생되지 않을 수 있어요. 유튜브를 쓰려면 이 프로그램을 인터넷 주소(GitHub 등)로 열거나, 음악 파일을 골라 주세요.';
     if (S.ytUrl) loadYT(S.ytUrl, true);
+    $('exportBtn').onclick = exportAll;
+    $('importFile').onchange = function () { var f = this.files && this.files[0]; if (f) importAll(f); this.value = ''; };
+    $('wipeAll').onclick = wipeAll;
     $('startBtn').onclick = start;
     est();
   }
   init();
-  return { ingest: ingest, state: function () { return S; }, est: est,
+  return { ingest: ingest, state: function () { return S; }, est: est, _export: exportAll, _import: importAll, _photos: function () { return photos.length; },
     _sample: function (n) { S.students = Sample.make(n || 24); save(); renderStudents(); est(); } };
 })();
 </script>
