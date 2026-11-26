@@ -187,7 +187,7 @@ details summary{cursor:pointer;font-weight:700}
 
   <button class="start" id="startBtn">▶ 칠판 상영 시작</button>
   <div class="keys"><kbd>스페이스</kbd> 멈춤/재생 · <kbd>←</kbd><kbd>→</kbd> 10초 뒤로/앞으로 · <kbd>F</kbd> 전체 화면 · <kbd>Esc</kbd> 나가기 · 끝나면 <b>칠판 그림 저장</b></div>
-  <div class="foot">우리 반 추억 칠판 · 과하개쌤 · Instagram @too.much.science<br>학생 이름과 글은 이 브라우저에만 저장되고 어디로도 보내지 않아요. 다 쓰면 [🧹 이 컴퓨터에서 모두 지우기]로 지워 주세요.</div>
+  <div class="foot">우리 반 추억 칠판 · 과하개쌤 · Instagram @too.much.science<br>학생 이름과 글은 이 브라우저에만 저장되고 어디로도 보내지 않아요. 다 쓰면 [🧹 이 컴퓨터에서 모두 지우기]로 지워 주세요.<br>글꼴은 구글 글꼴, 음악은 유튜브(쿠키 최소화 모드), 학생 그림 받기는 선생님 본인의 구글 설문을 써요. 따로 모으는 정보는 없어요.</div>
 </div>
 
 <div id="show">
@@ -489,7 +489,7 @@ var Music = (function () {
         function fin(ok, v) { if (done) return; done = true; clearTimeout(to); if (ok) res(v); else rej(v); }
         var pv = { controls: 0, disablekb: 1, playsinline: 1, rel: 0 };
         if (/^https?:/.test(location.protocol)) pv.origin = location.origin;
-        yt = new YT.Player('ytPlayer', { width: 280, height: 200, videoId: id, playerVars: pv, events: {
+        yt = new YT.Player('ytPlayer', { host: 'https://www.youtube-nocookie.com', width: 280, height: 200, videoId: id, playerVars: pv, events: {
           onReady: function () {
             var d = yt.getDuration();
             if (d > 0) return fin(true, { dur: d, title: (yt.getVideoData() || {}).title || '' });
